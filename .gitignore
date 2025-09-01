@@ -1,0 +1,4 @@
+cocotb/__pycache__
+cocotb/sim_build
+cocotb/*.vcd
+cocotb/*.xml
