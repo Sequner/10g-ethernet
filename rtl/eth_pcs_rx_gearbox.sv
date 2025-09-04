@@ -7,6 +7,7 @@ module eth_pcs_rx_gearbox (
     input [W_DATA-1:0] i_pma_data,
     output logic o_grbx_hdr_valid,
     output logic [W_SYNC-1:0] o_grbx_hdr,
+    output logic o_grbx_data_valid,
     output logic [W_DATA-1:0] o_grbx_data
 );
 
@@ -18,20 +19,37 @@ logic d_hdr_valid, q_hdr_valid;
 logic q_hdr_odd;
 // block sync signals
 logic slip;
+// tracks which part of 64b block is being received
 logic [W_TRANS_PER_BLK-1:0] q_trans_cnt;
+// offset to obtain header
 logic [W_RX_GEARBOX_OFFSET-1:0] d_hdr_offset, q_hdr_offset;
+// offset to obtain data: uses header offset but lags it by 1 cycle
+// because when header arrives only 1 portion of W_DATA width,
+// another portion of data comes on the next cycle
+// For example, i_pma_data = [H2, H1, D31, ... D2] - cycle 0
+//              i_pma_data = [D1, D0, D31, ... D2] - cycle 1
+//              i_pma_data = [D1, D0, H2, ...] -> header position changes
+//                                                but we use the old hdr position
+//                                                to get data properly 
+logic [W_RX_GEARBOX_OFFSET-1:0] q_data_offset;
 // cnt_skip: by default, hdr_valid is raised every 2 cycles for W_DATA=32 
 // However, we need to skip one count when hdr is at i_pma_data[1:0]
 // because next 2 i_pma_data is gonna be fully data without headers.
+// For  example, i_pma_data = [..., D0, H2, H1] - trans_id = 0
+//               i_pma_data = [D31, ..., D0]    - trans_id = 1
+//               i_pma_data = [D31, ..., D0]    - trans_id = 0 without clk_en
+//                                                trans_id = 1 with clk_en
+//                                                if trans_id = 0, it would check
+//                                                wrong header position
 logic d_clk_en, q_clk_en;
 
 always_comb begin : hdr_ctrl
     d_hdr_valid = (q_trans_cnt[W_TRANS_PER_BLK-1:0] == '0);
     if (q_hdr_odd) begin
-        if (q_hdr_offset == '0)
-            d_hdr_buf = {q_data_buf[q_hdr_offset], i_pma_data[W_DATA-1]}; 
+        if (q_hdr_offset == W_DATA-2)
+            d_hdr_buf = {q_data_buf[0], i_pma_data[q_hdr_offset+1]}; 
         else
-            d_hdr_buf = {i_pma_data[q_hdr_offset], i_pma_data[q_hdr_offset-1]};
+            d_hdr_buf = {i_pma_data[q_hdr_offset+2], i_pma_data[q_hdr_offset+1]};
     end
     else
         d_hdr_buf = {i_pma_data[q_hdr_offset+1], i_pma_data[q_hdr_offset]};
@@ -46,37 +64,35 @@ always_comb begin : output_ctrl
     o_grbx_hdr = q_hdr_buf;
     if (q_hdr_odd) begin
         // dynamic array slicing is not supported
-        // o_grbx_data = {q_data_buf[W_DATA-1-(q_hdr_offset+1):0], 
-        //                i_pma_data[W_DATA-1:W_DATA-1-q_hdr_offset]}
+        // o_grbx_data = {q_data_buf[q_data_offset:0], i_pma_data[W_DATA-1:q_data_offset+1]}
         for (int i=0; i<W_DATA; i++) begin
-            if (i < q_hdr_offset+1)
-                o_grbx_data[i] = i_pma_data[i+q_hdr_offset];
+            if (i < W_DATA-(q_data_offset+1))
+                o_grbx_data[i] = i_pma_data[i+(q_data_offset+1)];
             else
-                o_grbx_data[i] = q_data_buf[i-(q_hdr_offset+1)];
+                o_grbx_data[i] = q_data_buf[i-(W_DATA-(q_data_offset+1))];
         end
     end
     else begin
-        if (q_hdr_offset == '0)
-            o_grbx_data = i_pma_data;
-        else begin
-            // dynamic array slicing is not supported
-            // o_grbx_data = {q_data_buf[q_hdr_offset-1:0], i_pma_data[W_DATA-1:q_hdr_offset]}
-            for (int i=0; i<W_DATA; i++) begin
-                if (i < (W_DATA-1-q_hdr_offset)+1)
-                    o_grbx_data[i] = i_pma_data[i+q_hdr_offset];
-                else
-                    o_grbx_data[i] = q_data_buf[i-((W_DATA-1-q_hdr_offset)+1)];
-            end
+        // dynamic array slicing is not supported
+        // o_grbx_data = {q_data_buf[q_data_offset-1:0], i_pma_data[W_DATA-1:q_data_offset]}
+        for (int i=0; i<W_DATA; i++) begin
+            if (i < W_DATA-q_data_offset)
+                o_grbx_data[i] = i_pma_data[i+q_data_offset];
+            else
+                o_grbx_data[i] = q_data_buf[i-(W_DATA-q_data_offset)];
         end
     end
+
+    // at this point, all the data bits of the previous block were sent
+    // and data bits of the new block are only starting on this cycle 
+    // so there are no valid data bits being sent
+    o_grbx_data_valid = !(q_hdr_offset == W_DATA-2 & d_hdr_valid);
 end
 
 always_comb begin : clk_en_ctrl
     d_clk_en = 1'b1;
     if (q_clk_en) begin
-        if (q_hdr_odd & q_trans_cnt == 1'b1 & q_hdr_offset == 2'd2)
-            d_clk_en = '0;
-        else if (!q_hdr_odd & q_trans_cnt == 1'b1 & q_hdr_offset == 2'd0)
+        if (q_trans_cnt == 1'b1 & q_hdr_offset == '0)
             d_clk_en = '0;
     end
 end
@@ -92,23 +108,27 @@ eth_pcs_rx_block_synch u_sync(
 
 always_ff @(posedge i_clk) begin
     if (i_reset) begin
-        q_hdr_odd <= '0;
-        q_hdr_offset <= '0;
+        q_clk_en <= '1;
+        q_data_buf <= '0;
+        q_data_offset <= '0;
         q_hdr_valid <= '0;
         q_hdr_buf <= '0;
-        q_data_buf <= '0;
+        q_hdr_odd <= '0;
+        q_hdr_offset <= '0;
         q_trans_cnt <= '0;
     end
-    else if (d_clk_en) begin
-        q_hdr_odd <= (slip) ? ~q_hdr_odd : q_hdr_odd;
-        q_hdr_offset <= d_hdr_offset;
+    else begin
+        q_clk_en <= d_clk_en;
+        q_data_buf <= i_pma_data;
+        q_data_offset <= q_hdr_offset;
         q_hdr_valid <= d_hdr_valid;
         q_hdr_buf <= d_hdr_buf;
-        q_data_buf <= i_pma_data;
-        q_trans_cnt <= (slip) ? '0 : q_trans_cnt + 1'b1;
+        q_hdr_odd <= (slip) ? ~q_hdr_odd : q_hdr_odd;
+        if (d_clk_en) begin
+            q_hdr_offset <= d_hdr_offset;
+            q_trans_cnt <= (slip) ? '0 : q_trans_cnt + 1'b1;
+        end
     end
-
-    q_clk_en <= d_clk_en;
 end
 
 endmodule

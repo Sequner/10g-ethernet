@@ -1,18 +1,26 @@
-from cocotb.binary import BinaryValue
+from cocotb.types import Range, LogicArray
 
-def scrambler(data_in):
-    scr = BinaryValue(value='1'*58, n_bits=58).integer
+def scrambler(data_in, offset=0):
+    scr = 0
     for i in range(len(data_in)):
-        if i % 66 == 63:
-            data_in[i] = 1
-        elif i % 66 == 62:
-            data_in[i] = 0
-        else:
-            bit = (scr >> 57 & 1) ^ (scr >> 38 & 1) ^ data_in[i]
-            scr = (scr << 1) + bit
-            data_in[i] = bit
+        if (i % 66) == offset or (i % 66) == (offset+1):
+            continue
+        bit = (scr >> 57 & 1) ^ (scr >> 38 & 1) ^ data_in[i]
+        scr = (scr << 1) + bit
+        data_in[i] = bit
 
-def reverse_by_block(data_in, block_size=66):
-    for i in range(int(len(data_in)/block_size)):
-        data_in[i*block_size:(i+1)*block_size] = \
-        data_in[i*block_size:(i+1)*block_size][::-1]
+def descrambler(data_in):
+    scr = 0
+    for i in range(len(data_in)):
+        bit = (scr >> 57 & 1) ^ (scr >> 38 & 1) ^ data_in[i]
+        scr = (scr << 1) + data_in[i]
+        data_in[i] = bit
+
+def contains(small, big):
+    for i in range(len(big)-len(small)+1):
+        for j in range(len(small)):
+            if big[i+j] != small[j]:
+                break
+        else:
+            return True
+    return False
