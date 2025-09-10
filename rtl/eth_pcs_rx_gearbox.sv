@@ -41,7 +41,8 @@ logic [W_RX_GEARBOX_OFFSET-1:0] q_data_offset;
 //                                                trans_id = 1 with clk_en
 //                                                if trans_id = 0, it would check
 //                                                wrong header position
-logic d_clk_en, q_clk_en;
+logic d_clk_en;
+logic q_clk_en = 1'b1;
 
 always_comb begin : hdr_ctrl
     d_hdr_valid = (q_trans_cnt[W_TRANS_PER_BLK-1:0] == '0);
@@ -86,6 +87,9 @@ always_comb begin : output_ctrl
     // at this point, all the data bits of the previous block were sent
     // and data bits of the new block are only starting on this cycle 
     // so there are no valid data bits being sent
+    // For example, cycle -1: [D30 ... D0 D31] - prev D31, current [D30:D0] sent,
+    //              cycle  0: [D30 ... D0 H2 ] - prev D31, current [D30:D0] sent,
+    //              cycle  1: [H1 D31 ... D1 ] - nothing sent(!!), [D31:D1] saved
     o_grbx_data_valid = !(q_hdr_offset == W_DATA-2 & d_hdr_valid);
 end
 
@@ -107,27 +111,15 @@ eth_pcs_rx_block_synch u_sync(
 );
 
 always_ff @(posedge i_clk) begin
-    if (i_reset) begin
-        q_clk_en <= '1;
-        q_data_buf <= '0;
-        q_data_offset <= '0;
-        q_hdr_valid <= '0;
-        q_hdr_buf <= '0;
-        q_hdr_odd <= '0;
-        q_hdr_offset <= '0;
-        q_trans_cnt <= '0;
-    end
-    else begin
-        q_clk_en <= d_clk_en;
-        q_data_buf <= i_pma_data;
-        q_data_offset <= q_hdr_offset;
-        q_hdr_valid <= d_hdr_valid;
-        q_hdr_buf <= d_hdr_buf;
-        q_hdr_odd <= (slip) ? ~q_hdr_odd : q_hdr_odd;
-        if (d_clk_en) begin
-            q_hdr_offset <= d_hdr_offset;
-            q_trans_cnt <= (slip) ? '0 : q_trans_cnt + 1'b1;
-        end
+    q_clk_en <= d_clk_en;
+    q_data_buf <= i_pma_data;
+    q_data_offset <= q_hdr_offset;
+    q_hdr_valid <= d_hdr_valid;
+    q_hdr_buf <= d_hdr_buf;
+    q_hdr_odd <= (slip) ? ~q_hdr_odd : q_hdr_odd;
+    if (d_clk_en) begin
+        q_hdr_offset <= d_hdr_offset;
+        q_trans_cnt <= (slip) ? '0 : q_trans_cnt + 1'b1;
     end
 end
 

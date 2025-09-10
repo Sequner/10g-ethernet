@@ -50,7 +50,8 @@ typedef enum logic [N_STATE-1:0] {
 state_t d_state; 
 state_t q_state = ST_INIT;
 // AXI-S Ready ctrl
-logic d_tready, q_tready;
+logic d_tready; 
+logic q_tready = 1'b1;
 // Type of received data through AXI-S I/F
 logic term_rcvd;
 logic data_rcvd;
@@ -352,19 +353,7 @@ always_comb begin : fsm_ctrl
 end
 
 always_ff @(posedge i_clk) begin : reg_ctrl
-    if (i_reset) begin
-        q_state <= ST_INIT;
-        q_tready <= 1'b1;
-        q_trans_id <= '0; // TODO: set offset
-        q_hdr_id <= '0; 
-        q_last_valid <= '0;
-        q_last_data <= '0;
-        q_pld_cnt <= '0;
-        q_crc_id <= '0;
-        q_ifg_cnt <= '0;
-        q_last_rcvd <= '0;
-    end
-    else if (i_clk_en) begin
+    if (i_clk_en) begin
         q_state  <= d_state;
         q_trans_id <= d_trans_id;
         q_hdr_id <= d_hdr_id;

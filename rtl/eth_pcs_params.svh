@@ -20,7 +20,7 @@ localparam W_SH_INVAL_TH = $clog2(SH_INVAL_TH);
 localparam W_RX_GEARBOX_OFFSET = $clog2(W_DATA);
 localparam [W_RX_GEARBOX_OFFSET-1:0] RX_GEARBOX_OFFSET_INIT = W_DATA-2; 
 
-// Encoder params
+// Encoder/decoder params
 localparam C_TYPE = 8'h1E,
            S0_TYPE = 8'h78,
            S4_TYPE = 8'h33,

@@ -43,12 +43,7 @@ always_comb begin : write_port
 end
 
 always_ff @(posedge i_clk) begin
-    if (i_reset) begin
-        q_rptr <= '0;
-        q_wptr <= '0;
-        q_buf  <= '0;
-    end
-    else if (i_clk_en) begin
+    if (i_clk_en) begin
         q_rptr <= d_rptr;
         q_wptr <= d_wptr;
         q_buf <= d_buf;

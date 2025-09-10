@@ -83,9 +83,7 @@ always_comb begin : main_logic
 end
 
 always_ff @(posedge i_clk) begin
-    if (i_reset) 
-        q_scr <= '1;
-    else if (i_clk_en)
+    if (i_clk_en)
         q_scr <= d_scr; 
 end
     

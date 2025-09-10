@@ -44,21 +44,15 @@ always_comb begin : gearbox_buf_ctrl
     // at trans_cnt 0, gearbox receives a new block
     // so we save W_DATA+W_SYNC bits
     if (o_trans_cnt == '0)
-        d_buf[id+:(W_DATA+W_SYNC)] = {i_scr_data, i_sync_data};
+        d_buf[id+:(W_DATA+W_SYNC)] = {i_scr_data, i_sync_data}; // map as (H2, H1, D31,...,D0)
     else
         d_buf[id+:W_DATA] = i_scr_data;
 end
 
 always_ff @(posedge i_clk) begin
-    if (i_reset) begin
-        q_stop_cnt <= '0;
-        q_buf <= '0;
-    end
-    else begin
-        q_stop_cnt <= d_stop_cnt;
-        if (o_clk_en) begin
-            q_buf <= d_buf;
-        end
+    q_stop_cnt <= d_stop_cnt;
+    if (o_clk_en) begin
+        q_buf <= d_buf;
     end
 end
 
