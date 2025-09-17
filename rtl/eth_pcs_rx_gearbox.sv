@@ -32,8 +32,8 @@ logic [W_RX_GEARBOX_OFFSET-1:0] d_hdr_offset, q_hdr_offset;
 //                                                but we use the old hdr position
 //                                                to get data properly 
 logic [W_RX_GEARBOX_OFFSET-1:0] q_data_offset;
-// cnt_skip: by default, hdr_valid is raised every 2 cycles for W_DATA=32 
-// However, we need to skip one count when hdr is at i_pma_data[1:0]
+// clk_en: by default, hdr_valid is raised every 2 cycles for W_DATA=32 
+// However, we need to skip one count when hdr is at offset 0
 // because next 2 i_pma_data is gonna be fully data without headers.
 // For  example, i_pma_data = [..., D0, H2, H1] - trans_id = 0
 //               i_pma_data = [D31, ..., D0]    - trans_id = 1
@@ -87,9 +87,12 @@ always_comb begin : output_ctrl
     // at this point, all the data bits of the previous block were sent
     // and data bits of the new block are only starting on this cycle 
     // so there are no valid data bits being sent
-    // For example, cycle -1: [D30 ... D0 D31] - prev D31, current [D30:D0] sent,
-    //              cycle  0: [D30 ... D0 H2 ] - prev D31, current [D30:D0] sent,
-    //              cycle  1: [H1 D31 ... D1 ] - nothing sent(!!), [D31:D1] saved
+    // hdr_odd == 1, cycle -1: [D30 ... D0 D31] - prev D31, current [D30:D0] sent,
+    //               cycle  0: [D30 ... D0 H2 ] - prev D31, current [D30:D0] sent,
+    //               cycle  1: [H1 D31 ... D1 ] - nothing sent(!!), [D31:D1] saved
+    // hdr_odd == 0, cycle -1: [D31 ... D1 D0 ] - current [D31:D0] sent,
+    //               cycle  0: [D31 ... D1 D0 ] - current [D31:D0] sent,
+    //               cycle  1: [H2 H1 D31 ... D2] - nothing sent(!!) [D31:D2] saved
     o_grbx_data_valid = !(q_hdr_offset == W_DATA-2 & d_hdr_valid);
 end
 
@@ -123,4 +126,4 @@ always_ff @(posedge i_clk) begin
     end
 end
 
-endmodule
+endmodule : eth_pcs_rx_gearbox

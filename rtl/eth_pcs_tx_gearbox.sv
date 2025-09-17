@@ -43,10 +43,11 @@ always_comb begin : gearbox_buf_ctrl
     d_buf = q_buf >> W_DATA;
     // at trans_cnt 0, gearbox receives a new block
     // so we save W_DATA+W_SYNC bits
-    if (o_trans_cnt == '0)
-        d_buf[id+:(W_DATA+W_SYNC)] = {i_scr_data, i_sync_data}; // map as (H2, H1, D31,...,D0)
-    else
-        d_buf[id+:W_DATA] = i_scr_data;
+    if (o_trans_cnt == '0) // turn (H2, H1, D31...D0) into (D0...D31, H1, H2)
+        d_buf[id+:(W_DATA+W_SYNC)] = concat_reverse(i_sync_data, i_scr_data); 
+    else // reverse data
+        d_buf[id+:W_DATA] = reverse(i_scr_data);
+    // Note: reversing is done only for the sake of convenience during indexing
 end
 
 always_ff @(posedge i_clk) begin
@@ -57,7 +58,8 @@ always_ff @(posedge i_clk) begin
 end
 
 assign o_clk_en = (q_stop_cnt != TX_GEARBOX_CNT);
-assign o_pma_data = q_buf[W_DATA-1:0];
+// map (D0...D31, H1, H2) back to (H2, H1, D31...)
+assign o_pma_data = reverse(q_buf[W_DATA-1:0]); 
 assign o_trans_cnt = q_stop_cnt[W_TRANS_PER_BLK-1:0];
 
 endmodule : eth_pcs_tx_gearbox
