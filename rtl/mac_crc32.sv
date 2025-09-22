@@ -24,13 +24,14 @@ always_comb begin
         d_crc = CRC_RESET;
     else begin // TODO: if W_DATA==16 is implemented, add parameterization
         case (i_crc_en)
-            4'b0001: calc_crc_8bit (q_crc, i_data[7:0],  d_crc);
-            4'b0011: calc_crc_16bit(q_crc, i_data[15:0], d_crc);
-            4'b0111: calc_crc_24bit(q_crc, i_data[23:0], d_crc);
-            4'b1111: calc_crc_32bit(q_crc, i_data[31:0], d_crc);
+            4'b0000: d_crc = q_crc;
+            4'b0001: calc_crc_8bit (q_crc, i_data[0:0], d_crc);
+            4'b0011: calc_crc_16bit(q_crc, i_data[1:0], d_crc);
+            4'b0111: calc_crc_24bit(q_crc, i_data[2:0], d_crc);
+            4'b1111: calc_crc_32bit(q_crc, i_data[3:0], d_crc);
             default: begin
                 d_crc = q_crc;
-                assert(0, "ERROR: DATA VALID IS NOT CONTINUOS");
+                assert(0) else $fatal("ERROR: DATA VALID IS NOT CONTINUOS");
             end
         endcase
     end
