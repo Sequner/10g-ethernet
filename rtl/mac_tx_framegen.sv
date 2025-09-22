@@ -21,13 +21,6 @@ module mac_tx_framegen(
     output logic [N_CHANNELS-1:0][W_BYTE-1:0] o_xgmii_data
 );
 
-// --- Localparams --- //
-localparam MAC_HDR_DATA = {SYM_SFD,   SYM_PREAM,
-                           SYM_PREAM, SYM_PREAM,
-                           SYM_PREAM, SYM_PREAM, 
-                           SYM_PREAM, SYM_START};
-localparam MAC_HDR_CTRL = 8'h01;
-
 // --- Functions --- ///
 // Header Generator
 function automatic void send_header(
@@ -70,8 +63,10 @@ function automatic void send_idle(
     o_xgmii_data = {N_CHANNELS{SYM_IDLE}};
 endfunction
 
-logic [N_CHANNELS-1:0] d_xgmii_ctrl, q_xgmii_ctrl;
-logic [N_CHANNELS-1:0][W_BYTE-1:0] d_xgmii_data, q_xgmii_data;
+logic [N_CHANNELS-1:0] d_xgmii_ctrl;
+logic [N_CHANNELS-1:0] q_xgmii_ctrl = '1;
+logic [N_CHANNELS-1:0][W_BYTE-1:0] d_xgmii_data;
+logic [N_CHANNELS-1:0][W_BYTE-1:0] q_xgmii_data = {N_CHANNELS{SYM_IDLE}};
 always_comb begin
     d_xgmii_ctrl = '1;
     d_xgmii_data = {N_CHANNELS{SYM_IDLE}};
@@ -94,11 +89,7 @@ always_comb begin
 end
 
 always_ff @(posedge i_clk) begin : reg_ctrl
-    if (i_reset) begin
-        q_xgmii_ctrl <= '1;
-        q_xgmii_data <= {N_CHANNELS{SYM_IDLE}};
-    end
-    else begin
+    if (i_clk_en) begin
         q_xgmii_ctrl <= d_xgmii_ctrl;
         q_xgmii_data <= d_xgmii_data;
     end

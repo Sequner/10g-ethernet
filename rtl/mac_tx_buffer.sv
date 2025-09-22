@@ -19,8 +19,13 @@ module mac_tx_buffer(
 // --- Main Logic --- //
 logic empty;
 logic [N_MAC_TX_BUF-1:0][W_MAC_TX_BUF-1:0] d_buf, q_buf;
-logic [W_MAC_TX_BUF_CNT-1:0] d_rptr, q_rptr;
-logic [W_MAC_TX_BUF_CNT-1:0] d_wptr, q_wptr;
+logic [W_MAC_TX_BUF_CNT:0] d_rptr, q_rptr; // 1 bit added for wrap around
+logic [W_MAC_TX_BUF_CNT:0] d_wptr, q_wptr;
+logic [W_MAC_TX_BUF_CNT-1:0] raddr;
+logic [W_MAC_TX_BUF_CNT-1:0] waddr;
+
+assign raddr = q_rptr[W_MAC_TX_BUF_CNT-1:0];
+assign waddr = q_wptr[W_MAC_TX_BUF_CNT-1:0];
     
 always_comb begin : read_port
     d_rptr = q_rptr;
@@ -36,14 +41,18 @@ always_comb begin : write_port
     if (i_clr)
         d_wptr = '0;
     else if (i_wen) begin
-        d_buf[q_wptr][W_DATA+:N_CHANNELS] = i_wctrl;
-        d_buf[q_wptr][W_DATA-1:0] = i_wdata;
+        d_buf[waddr][W_DATA+:N_CHANNELS] = i_wctrl;
+        d_buf[waddr][W_DATA-1:0] = i_wdata;
         d_wptr += 1;
     end
 end
 
 always_ff @(posedge i_clk) begin
-    if (i_clk_en) begin
+    if (i_reset) begin
+        q_rptr <= '0;
+        q_wptr <= '0;
+    end
+    else if (i_clk_en) begin
         q_rptr <= d_rptr;
         q_wptr <= d_wptr;
         q_buf <= d_buf;
@@ -54,7 +63,7 @@ assign o_empty = (q_wptr == q_rptr);
 
 // 4 upper bits of the current line in the buffer
 // are valid bits, the rest are data bits
-assign o_rctrl = q_buf[q_rptr][W_DATA+:N_CHANNELS];
-assign o_rdata = q_buf[q_rptr][W_DATA-1:0];
+assign o_rctrl = q_buf[raddr][W_DATA+:N_CHANNELS];
+assign o_rdata = q_buf[raddr][W_DATA-1:0];
 
 endmodule : mac_tx_buffer

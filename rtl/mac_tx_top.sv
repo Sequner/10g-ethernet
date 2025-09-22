@@ -7,8 +7,8 @@ module mac_tx_top(
     input i_reset,
     // AXI-Stream Interface
     input  logic s_tvalid,
-    input  logic [N_SYMBOLS-1:0][W_SYMBOL-1:0] s_tdata,
     input  logic [N_SYMBOLS-1:0] s_tkeep,
+    input  logic [N_SYMBOLS-1:0][W_SYMBOL-1:0] s_tdata,
     input  logic s_tlast,
     output logic s_tready,
     // XGMII Interface
@@ -66,7 +66,7 @@ mac_tx_ctrl u_mac_tx_ctrl(
     .i_crc(crc)
 );
 
-mac_crc32 u_crc(
+mac_crc32 u_tx_crc(
     .i_clk(i_clk),
     .i_reset(i_reset),
     .i_clk_en(i_clk_en),
