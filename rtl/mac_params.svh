@@ -33,7 +33,9 @@ localparam W_MAC_TX_BUF_CNT = $clog2(N_MAC_TX_BUF);
 localparam W_CRC = 32;
 localparam N_CRC_BYTE = W_CRC / W_BYTE;
 localparam CRC_RESET = 32'hFFFFFFFF;
-localparam CRC_MAGIC_NUM = 32'hC704DD7B;
+// inserting inverse correct CRC always results in this value
+// https://stackoverflow.com/questions/58393307/verification-of-a-crc-checksum-against-zero 
+localparam CRC_MAGIC_NUM = 32'h2144DF1C;
 // Inter-frame Gap (IFG)
 localparam W_IFG = 96;
 localparam N_IFG_TRANS = W_IFG / W_DATA;
