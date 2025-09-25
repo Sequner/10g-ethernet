@@ -16,10 +16,10 @@ logic [W_TX_GEARBOX_BUF-1:0] d_buf, q_buf;
 
 always_comb begin : cnt_ctrl
     d_stop_cnt = q_stop_cnt;
-    if (d_stop_cnt == TX_GEARBOX_CNT)
-        d_stop_cnt = 0;
+    if (q_stop_cnt == TX_GEARBOX_CNT)
+        d_stop_cnt = '0;
     else
-        d_stop_cnt += 1;
+        d_stop_cnt += 1'b1;
 end
 
 // When new pcs block is generated, the gearbox
@@ -33,31 +33,33 @@ end
 // Then, clk_en is disabled, so that the gearbox
 // clears the leftover bits.
 
-// blk_cnt identifies how many pcs blocks were
-// received so far. blk_cnt*2 is the offset of all
-// leftover bits (2 bits per pcs block). 
+// W_TX_GEARBOX_CNT:W_TRANS_PER_BLK shows the # of blocks
+// received so far. Each received block adds up an offset
+// of 2 bits because of sync hdr
+integer id;
+
 always_comb begin : gearbox_buf_ctrl 
-    integer blk_cnt, id;
-    blk_cnt = q_stop_cnt[W_TX_GEARBOX_CNT:W_TRANS_PER_BLK];
-    id = blk_cnt << 1;
+    id = {q_stop_cnt[W_TX_GEARBOX_CNT:W_TRANS_PER_BLK], 1'b0};
+    // The first W_DATA bits of q_buf are sent to PMA.
+    // Hence, they are removed from the buffer
     d_buf = q_buf >> W_DATA;
     // at trans_cnt 0, gearbox receives a new block
     // so we save W_DATA+W_SYNC bits
+    // at trans_cnt > 0 , id + 2 because once header + data 
+    // were received, there are 2 more extra bits 
     if (o_trans_cnt == '0) // turn (H2, H1, D31...D0) into (D0...D31, H1, H2)
         d_buf[id+:(W_DATA+W_SYNC)] = concat_reverse(i_sync_data, i_scr_data); 
     else // reverse data
-        d_buf[id+:W_DATA] = reverse(i_scr_data);
+        d_buf[(id+2)+:W_DATA] = reverse(i_scr_data);
     // Note: reversing is done only for the sake of convenience during indexing
 end
 
 always_ff @(posedge i_clk) begin
     q_stop_cnt <= d_stop_cnt;
-    if (o_clk_en) begin
-        q_buf <= d_buf;
-    end
+    q_buf <= d_buf;
 end
 
-assign o_clk_en = (q_stop_cnt != TX_GEARBOX_CNT);
+assign o_clk_en = (q_stop_cnt < TX_GEARBOX_CNT);
 // map (D0...D31, H1, H2) back to (H2, H1, D31...)
 assign o_pma_data = reverse(q_buf[W_DATA-1:0]); 
 assign o_trans_cnt = q_stop_cnt[W_TRANS_PER_BLK-1:0];

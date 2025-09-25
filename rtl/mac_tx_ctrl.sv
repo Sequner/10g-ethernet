@@ -6,11 +6,11 @@ module mac_tx_ctrl(
     input i_clk_en,
     input i_reset,
     // AXI-Stream Slave Interface
-    input  logic s_tvalid,
-    input  logic [N_SYMBOLS-1:0] s_tkeep,
-    input  logic [N_SYMBOLS-1:0][W_SYMBOL-1:0] s_tdata,
-    input  logic s_tlast,
-    output logic s_tready,
+    input  logic s_axis_tvalid,
+    input  logic [N_SYMBOLS-1:0] s_axis_tkeep,
+    input  logic [N_SYMBOLS-1:0][W_SYMBOL-1:0] s_axis_tdata,
+    input  logic s_axis_tlast,
+    output logic s_axis_tready,
     // Framegen Ctrl
     output logic [W_MAC_HDR_CNT-1:0] o_hdr_id,
     output logic o_gen_hdr,
@@ -84,18 +84,18 @@ always_comb begin : axis2ctrl_converter
     term_rcvd = '0;
     data_rcvd = '0;
     // valid transaction
-    if (s_tvalid & q_tready) begin
-        if (s_tlast) begin
+    if (s_axis_tvalid & q_tready) begin
+        if (s_axis_tlast) begin
             term_rcvd = 1'b1;
-            assert(s_tkeep == 0  |
-                   s_tkeep == 1  | s_tkeep == 3  |
-                   s_tkeep == 7  | s_tkeep == 15 |
-                   s_tkeep == 23 | s_tkeep == 31 )
+            assert(s_axis_tkeep == 0  |
+                   s_axis_tkeep == 1  | s_axis_tkeep == 3  |
+                   s_axis_tkeep == 7  | s_axis_tkeep == 15 |
+                   s_axis_tkeep == 23 | s_axis_tkeep == 31 )
             else $fatal("transaction is not aligned properly");
         end
         else begin
             data_rcvd = 1'b1;
-            assert(s_tkeep == '1)
+            assert(s_axis_tkeep == '1)
             else $fatal("transaction is not aligned properly");
         end
     end
@@ -136,16 +136,16 @@ end
 always_comb begin : last_valid_ctrl
     // Zero out invalid bytes
     for (int i=0; i<N_SYMBOLS; i++) begin
-        if (!s_tkeep[i])
+        if (!s_axis_tkeep[i])
             d_last_data[i] = '0; 
         else
-            d_last_data[i] = s_tdata[i];
+            d_last_data[i] = s_axis_tdata[i];
     end
 
     if (term_rcvd & q_pld_cnt < N_MIN_TRANS)
         d_last_valid = '1;
     else
-        d_last_valid = s_tkeep;
+        d_last_valid = s_axis_tkeep;
 end
 
 always_comb begin : buf_ctrl
@@ -163,7 +163,7 @@ always_comb begin : buf_ctrl
                 (wr_term)     ;
 
     o_buf_wctrl = '0;
-    o_buf_wdata = s_tdata;
+    o_buf_wdata = s_axis_tdata;
     if (reset_states) begin // TODO: do with unique if
         o_buf_clear = 1'b1; // not needed actually
         d_crc_id = '0;
@@ -213,13 +213,13 @@ always_comb begin : crc_ctrl
     o_crc_data = '0;
 
     if (data_rcvd) begin
-        o_crc_en   = s_tkeep;
-        o_crc_data = s_tdata;
+        o_crc_en   = s_axis_tkeep;
+        o_crc_data = s_axis_tdata;
     end
     // if min pld requirement is satisfied
     else if (term_rcvd & q_pld_cnt >= N_MIN_PLD) begin
-        o_crc_en   = s_tkeep;
-        o_crc_data = s_tdata;
+        o_crc_en   = s_axis_tkeep;
+        o_crc_data = s_axis_tdata;
     end
     else if (wr_tail_pad) begin
         o_crc_en   = q_last_valid;
@@ -376,6 +376,6 @@ always_ff @(posedge i_clk) begin : reg_ctrl
     end
 end
 
-assign s_tready = (i_clk_en & !o_gen_error) ? q_tready : '0;
+assign s_axis_tready = (i_clk_en & !o_gen_error) ? q_tready : '0;
 
 endmodule : mac_tx_ctrl

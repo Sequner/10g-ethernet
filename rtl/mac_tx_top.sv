@@ -3,14 +3,14 @@ import mac_params::*;
 
 module mac_tx_top(
     input i_clk,
-    input i_clk_en,
     input i_reset,
+    input i_clk_en,
     // AXI-Stream Interface
-    input  logic s_tvalid,
-    input  logic [N_SYMBOLS-1:0] s_tkeep,
-    input  logic [N_SYMBOLS-1:0][W_SYMBOL-1:0] s_tdata,
-    input  logic s_tlast,
-    output logic s_tready,
+    input  logic s_axis_tvalid,
+    input  logic [N_SYMBOLS-1:0] s_axis_tkeep,
+    input  logic [N_SYMBOLS-1:0][W_SYMBOL-1:0] s_axis_tdata,
+    input  logic s_axis_tlast,
+    output logic s_axis_tready,
     // XGMII Interface
     output logic [N_CHANNELS-1:0] o_xgmii_ctrl,
     output logic [N_CHANNELS-1:0][W_BYTE-1:0] o_xgmii_data
@@ -43,11 +43,11 @@ mac_tx_ctrl u_mac_tx_ctrl(
     .i_clk(i_clk),
     .i_clk_en(i_clk_en),
     .i_reset(i_reset),
-    .s_tvalid(s_tvalid),
-    .s_tdata(s_tdata),
-    .s_tkeep(s_tkeep),
-    .s_tlast(s_tlast),
-    .s_tready(s_tready),
+    .s_axis_tvalid(s_axis_tvalid),
+    .s_axis_tdata(s_axis_tdata),
+    .s_axis_tkeep(s_axis_tkeep),
+    .s_axis_tlast(s_axis_tlast),
+    .s_axis_tready(s_axis_tready),
     .o_hdr_id(hdr_id),
     .o_gen_hdr(gen_hdr),
     .o_gen_data(gen_data),
