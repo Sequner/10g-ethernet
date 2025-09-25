@@ -24,6 +24,10 @@ localparam [W_RX_GEARBOX_OFFSET-1:0] RX_GEARBOX_OFFSET_INIT = W_DATA-2;
 localparam C_TYPE = 8'h1E,
            S0_TYPE = 8'h78,
            S4_TYPE = 8'h33,
+           OS_TYPE = 8'h66,
+           O0_TYPE = 8'h4B,
+           O4_TYPE = 8'h2D,
+           O04_TYPE = 8'h55,
            T0_TYPE = 8'h87,
            T1_TYPE = 8'h99,
            T2_TYPE = 8'hAA,
@@ -45,5 +49,26 @@ localparam CODE_IDLE = 7'h00,
 
 // Scrambler params
 localparam W_SCR = 58;
+
+// Functions
+function automatic logic [W_DATA-1:0] reverse(
+    input [W_DATA-1:0] i_data
+);
+    for (int i=0; i<W_DATA; i++)
+        reverse[i] = i_data[W_DATA-1-i];
+endfunction
+
+// concatenate and reverse sync hdr & data
+function automatic logic [W_SYNC+W_DATA-1:0] concat_reverse(
+    input [W_SYNC-1:0] i_sync,
+    input [W_DATA-1:0] i_data
+);
+    logic [W_SYNC+W_DATA-1:0] concat;
+    concat = {i_sync, i_data};
+    for (int i=0; i<W_SYNC+W_DATA; i++)
+        concat_reverse[i] = concat[W_SYNC+W_DATA-1-i];
+endfunction
+
+
 
 endpackage

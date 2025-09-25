@@ -2,8 +2,8 @@ SIM ?= verilator
 TOPLEVEL_LANG ?= verilog
 VERILOG_SOURCES = $(shell pwd)/../rtl/*.sv \
 				  $(shell pwd)/../rtl/*.svh
-TOPLEVEL = custom_eth_core_wrapper
-MODULE = tb_wrapper
+TOPLEVEL = tbench_mac_pcs 
+MODULE = test_mac_pcs
 
 COCOTB_HDL_TIMEUNIT = 1ns
 COCOTB_HDL_TIMEPRECISION = 1ns
