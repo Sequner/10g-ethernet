@@ -6,14 +6,14 @@ module eth_pcs_scrambler #(
     input i_reset,
     input i_clk_en,
     input [W_DATA-1:0] i_pld_data,
-    output [W_DATA-1:0] o_scr_data
+    output logic [W_DATA-1:0] o_scr_data
 );
 
 logic [W_SCR-1:0] d_scr, q_scr, w_scr;
 
-// Scrambler
-function automatic void scramble(
-    input logic [15:0] i_data,
+// Scrambler - 32 bits
+function automatic void scramble_32b(
+    input logic [31:0] i_data,
     input logic [W_SCR-1:0] i_scr,
     output logic [W_SCR-1:0] o_scr
 );
@@ -55,7 +55,7 @@ endfunction
 always_comb begin : main_logic
     d_scr = q_scr;
     // TODO: add scrambler function for 16 bits
-    scramble(i_pld_data, q_scr, w_scr);
+    scramble_32b(i_pld_data, q_scr, w_scr);
     o_scr_data = reverse(w_scr[W_DATA-1:0]);
     if (SCR_MODE == 0) // scrambler
         d_scr = w_scr;
