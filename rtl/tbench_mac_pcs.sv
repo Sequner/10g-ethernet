@@ -19,7 +19,19 @@ logic m_axis_tuser;
 logic [W_DATA-1:0] o_tx_pma_data;
 logic [W_DATA-1:0] i_rx_pma_data;
 
-assign i_rx_pma_data = o_tx_pma_data; // loopback
+`ifdef PMA_DATA_SHIFT
+    localparam PMA_DATA_SHIFT = 1;
+`else
+    localparam PMA_DATA_SHIFT = 0;
+`endif
+
+logic [W_DATA+PMA_DATA_SHIFT-1:0] shifted_data;
+
+always_ff @(posedge i_clk) begin : shift_ctrl
+    shifted_data <= (shifted_data << W_DATA) + o_tx_pma_data;
+end
+
+assign i_rx_pma_data = shifted_data[W_DATA+PMA_DATA_SHIFT-1-:W_DATA]; // loopback
 
 custom_mac_pcs u_eth_core(.*);
 

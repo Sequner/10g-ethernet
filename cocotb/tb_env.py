@@ -2,7 +2,7 @@ import cocotb
 from cocotb.triggers import RisingEdge
 import random
 
-class AXISlaveDriver:
+class AXISSlaveDriver:
     def __init__(self, dut, prefix="s_axis"):
         self.dut = dut
         self.tdata = getattr(dut, f"{prefix}_tdata")
@@ -27,19 +27,46 @@ class AXISlaveDriver:
         self.tvalid.value = 0
         self.tlast.value = 0
 
-class Monitor:
-    def __init__(self, dut, signal_name):
+class AXISSlaveMonitor:
+    _signals = ["tvalid", "tdata", "tkeep", "tlast", "tready"]
+    def __init__(self, dut, prefix='s_axis_'):
         self.dut = dut
-        self.signal = getattr(dut, signal_name)
+        for sig in self._signals:
+            name = prefix + sig
+            setattr(self, sig, getattr(dut, name))
         self.captured = []
 
     async def observe(self, cycles=50):
         for _ in range(cycles):
             await RisingEdge(self.dut.i_clk)
-            self.captured.append(int(self.signal.value))
+            if not (self.tvalid.value == 1 and self.tready.value == 1):
+                continue
+            for i in range(len(self.tkeep)):
+                if self.tkeep[i].value == 1:
+                    self.captured.append(int(self.tdata[i].value))
+
+class AXISMasterMonitor:
+    _signals = ["tvalid", "tdata", "tkeep", "tlast", "tuser"]
+    def __init__(self, dut, prefix='m_axis_'):
+        self.dut = dut
+        for sig in self._signals:
+            name = prefix + sig
+            setattr(self, sig, getattr(dut, name))
+        self.captured = []
+
+    async def observe(self, cycles=50):
+        for _ in range(cycles):
+            await RisingEdge(self.dut.i_clk)
+            if self.tvalid.value == 0:
+                continue
+            for i in range(len(self.tkeep)):
+                if self.tkeep[i].value == 1:
+                    self.captured.append(int(self.tdata[i].value))
+            # remove last 4, because they are CRC
+            if self.tlast.value == 1:
+                self.captured = self.captured[:-4]
 
 class Scoreboard:
     def check(self, sent_data, received_data):
-        expected = [x + 1 for x in sent_data]
-        assert received_data[-len(sent_data):] == expected, \
-            f"Scoreboard mismatch: got {received_data[-len(sent_data):]}, expected {expected}"
+        assert sent_data == received_data, \
+            f"Scoreboard mismatch"
