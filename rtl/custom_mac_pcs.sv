@@ -4,23 +4,24 @@ module custom_mac_pcs (
     // TX Clock & Reset
     input i_tx_clk,
     input i_tx_reset,
-    // RX Clock & Reset
-    input i_rx_clk,
-    input i_rx_reset,
-    // Slave AXI-Stream Interface
+    // TX Slave AXI-Stream Interface
     input s_axis_tvalid,
     input [N_SYMBOLS-1:0][W_SYMBOL-1:0] s_axis_tdata,
     input [N_SYMBOLS-1:0] s_axis_tkeep,
     input s_axis_tlast,
     output s_axis_tready,
-    // Master AXI-Stream Interface
+    // TX PMA
+    output [W_DATA-1:0] o_tx_pma_data,
+    // RX Clock & Reset
+    input i_rx_clk,
+    input i_rx_reset,
+    // RX Master AXI-Stream Interface
     output m_axis_tvalid,
     output [N_SYMBOLS-1:0] m_axis_tkeep,
     output [N_SYMBOLS-1:0][W_SYMBOL-1:0] m_axis_tdata,
     output m_axis_tlast,
     output m_axis_tuser,
-    // PMA Data
-    output [W_DATA-1:0] o_tx_pma_data,
+    // RX PMA Data
     input  [W_DATA-1:0] i_rx_pma_data
 );
 
