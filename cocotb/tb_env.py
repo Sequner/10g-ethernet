@@ -21,8 +21,8 @@ class AXISSlaveDriver:
 
             # Wait until DUT is ready
             while not self.tready.value:
-                await RisingEdge(self.dut.i_clk)
-            await RisingEdge(self.dut.i_clk)
+                await RisingEdge(self.dut.clk)
+            await RisingEdge(self.dut.clk)
 
         self.tvalid.value = 0
         self.tlast.value = 0
@@ -38,7 +38,7 @@ class AXISSlaveMonitor:
 
     async def observe(self, cycles=50):
         for _ in range(cycles):
-            await RisingEdge(self.dut.i_clk)
+            await RisingEdge(self.dut.clk)
             if not (self.tvalid.value == 1 and self.tready.value == 1):
                 continue
             for i in range(len(self.tkeep)):
@@ -56,7 +56,7 @@ class AXISMasterMonitor:
 
     async def observe(self, cycles=50):
         for _ in range(cycles):
-            await RisingEdge(self.dut.i_clk)
+            await RisingEdge(self.dut.clk)
             if self.tvalid.value == 0:
                 continue
             for i in range(len(self.tkeep)):

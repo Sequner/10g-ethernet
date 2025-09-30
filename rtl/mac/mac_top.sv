@@ -1,7 +1,7 @@
 module mac_top (
-    input i_clk,
-    input i_reset,
     /* --- MAC TX --- */
+    input i_tx_clk,
+    input i_tx_reset,
     input i_tx_clk_en,
     // Slave AXI-Stream Interface
     input  s_axis_tvalid,
@@ -13,6 +13,8 @@ module mac_top (
     output [N_CHANNELS-1:0] o_tx_xgmii_ctrl,
     output [N_CHANNELS-1:0][W_BYTE-1:0] o_tx_xgmii_data,
     /* --- MAC RX --- */
+    input i_rx_clk,
+    input i_rx_reset,
     input i_rx_clk_en,
     // Master AXI-Stream Interface
     output m_axis_tvalid,
@@ -26,8 +28,8 @@ module mac_top (
 );
 
 mac_tx_top u_mac_tx (
-    .i_clk(i_clk),
-    .i_reset(i_reset),
+    .i_clk(i_tx_clk),
+    .i_reset(i_tx_reset),
     .i_clk_en(i_tx_clk_en),
     .s_axis_tvalid(s_axis_tvalid),
     .s_axis_tkeep(s_axis_tkeep),
@@ -39,8 +41,8 @@ mac_tx_top u_mac_tx (
 );
 
 mac_rx u_mac_rx (
-    .i_clk(i_clk),
-    .i_reset(i_reset),
+    .i_clk(i_rx_clk),
+    .i_reset(i_rx_reset),
     .i_clk_en(i_rx_clk_en),
     .i_xgmii_ctrl(i_rx_xgmii_ctrl),
     .i_xgmii_data(i_rx_xgmii_data),

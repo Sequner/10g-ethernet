@@ -15,16 +15,16 @@ async def test_basic_packet(dut):
     m_monitor = AXISMasterMonitor(dut)
     scoreboard = Scoreboard()
 
-    cocotb.start_soon(Clock(dut.i_clk, CLK_PERIOD, units="ns").start())
+    cocotb.start_soon(Clock(dut.clk, CLK_PERIOD, units="ns").start())
     dut.s_axis_tvalid.value = 0
     dut.s_axis_tkeep.value = 0
     dut.s_axis_tlast.value = 0
-    dut.i_reset.value = 1
+    dut.reset.value = 1
     await Timer(CLK_PERIOD*5)
-    dut.i_reset.value = 0
+    dut.reset.value = 0
     await Timer(CLK_PERIOD*1000)
     for _ in range(5):
-        await RisingEdge(dut.i_clk)
+        await RisingEdge(dut.clk)
 
     packet_data = [random.randint(1, 1000) for _ in range(15)]
     # range should have more than 62 bytes

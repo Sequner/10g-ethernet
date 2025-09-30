@@ -3,7 +3,7 @@ TOPLEVEL_LANG ?= verilog
 VERILOG_SOURCES = $(shell pwd)/../rtl/*.sv \
 				  $(shell pwd)/../rtl/mac/*.sv \
 				  $(shell pwd)/../rtl/eth_pcs/*.sv \
-				  $(shell pwd)/../rtl/package/*.svh
+				  $(shell pwd)/../rtl/package/*.sv
 TOPLEVEL = tbench_mac_pcs 
 MODULE = test_mac_pcs
 
