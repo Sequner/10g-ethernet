@@ -68,5 +68,6 @@ class AXISMasterMonitor:
 
 class Scoreboard:
     def check(self, sent_data, received_data):
+        print(sent_data)
         assert sent_data == received_data, \
             f"Scoreboard mismatch"

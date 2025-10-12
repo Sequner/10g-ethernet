@@ -1,3 +1,4 @@
+import cmn_params::*;
 import eth_pcs_params::*;
 
 module eth_pcs_66_64_decoder (

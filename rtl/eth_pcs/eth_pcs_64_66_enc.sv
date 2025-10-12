@@ -1,3 +1,4 @@
+import cmn_params::*;
 import eth_pcs_params::*;
 
 module eth_pcs_64_66_enc(
@@ -159,7 +160,7 @@ function automatic void generate_blk(
 );
     o_sync_data = SYNC_CTRL;
     // Default is error block in case nothing matches
-    o_pld_blk = {8{CODE_ERR}, C_TYPE};
+    o_pld_blk = {{8{CODE_ERR}}, C_TYPE};
     case (1'b1)
        // DDDDDDDD
        is_data_block(i_ctrl): begin
@@ -258,7 +259,7 @@ always_comb begin : main_logic
         end
         else begin
             d_sync_data = SYNC_CTRL;
-            d_pld_blk = {8{CODE_ERR}, C_TYPE};
+            d_pld_blk = {{8{CODE_ERR}}, C_TYPE};
         end
     end
 end

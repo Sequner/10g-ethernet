@@ -1,3 +1,4 @@
+import cmn_params::*;
 import mac_params::*;
 
 module mac_tx_framegen(
