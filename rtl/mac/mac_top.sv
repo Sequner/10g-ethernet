@@ -1,3 +1,5 @@
+import mac_params::*;
+
 module mac_top (
     /* --- MAC TX --- */
     input i_tx_clk,

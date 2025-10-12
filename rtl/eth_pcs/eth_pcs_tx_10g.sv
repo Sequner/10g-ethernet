@@ -1,3 +1,5 @@
+import eth_pcs_params::*;
+
 module eth_pcs_tx_10g (
     input i_clk,
     input i_reset,

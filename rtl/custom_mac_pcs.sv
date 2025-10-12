@@ -1,4 +1,4 @@
-import cmn_params::*;
+import mac_params::*;
 
 module custom_mac_pcs (
     // TX Clock & Reset

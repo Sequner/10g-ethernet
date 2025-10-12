@@ -1,4 +1,4 @@
-import cmn_params::*;
+import mac_params::*;
 
 module mac_crc32 (
     input i_clk,

@@ -1,5 +1,7 @@
 package eth_pcs_params;
 
+import cmn_params::*;
+
 localparam W_PLD_BLK = W_BLK;
 
 localparam W_SYNC    = 2;

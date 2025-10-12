@@ -1,4 +1,3 @@
-import cmn_params::*;
 import mac_params::*;
 
 module mac_rx (

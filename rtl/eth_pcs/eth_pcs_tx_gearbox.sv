@@ -1,4 +1,3 @@
-import cmn_params::*;
 import eth_pcs_params::*;
 
 module eth_pcs_tx_gearbox(
@@ -11,8 +10,10 @@ module eth_pcs_tx_gearbox(
     output [W_TRANS_PER_BLK-1:0] o_trans_cnt
 );
 
-logic [W_TX_GEARBOX_CNT:0]   d_stop_cnt, q_stop_cnt;
-logic [W_TX_GEARBOX_BUF-1:0] d_buf, q_buf;
+logic [W_TX_GEARBOX_CNT:0] d_stop_cnt;
+logic [W_TX_GEARBOX_CNT:0] q_stop_cnt = '0;
+logic [W_TX_GEARBOX_BUF-1:0] d_buf;
+logic [W_TX_GEARBOX_BUF-1:0] q_buf = '0;
 
 always_comb begin : cnt_ctrl
     d_stop_cnt = q_stop_cnt;

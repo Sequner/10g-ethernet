@@ -1,4 +1,3 @@
-import cmn_params::*;
 import eth_pcs_params::*;
 
 module eth_pcs_rx_block_synch (
@@ -23,10 +22,9 @@ always_comb begin : header_cnt
     slip = '0;
     if (i_sync_hdr == SYNC_CTRL || i_sync_hdr == SYNC_DATA) begin
         if (q_sh_cnt == SH_VAL_TH-1) begin
+            d_sh_inval_cnt = '0;
             if (q_sh_inval_cnt == '0)
                 d_blk_lock = 1'b1;
-            else
-                d_sh_inval_cnt = '0;
         end
     end
     else begin

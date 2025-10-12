@@ -1,3 +1,5 @@
+import eth_pcs_params::*;
+
 module eth_pcs_scrambler #(
     // 0 - scrambler, 1 - descrambler
     parameter SCR_MODE = 0

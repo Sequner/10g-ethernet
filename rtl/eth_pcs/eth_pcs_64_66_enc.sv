@@ -1,4 +1,3 @@
-import cmn_params::*;
 import eth_pcs_params::*;
 
 module eth_pcs_64_66_enc(
@@ -29,9 +28,8 @@ function automatic is_c_block(
     input logic [N_BYTES_PER_BLK-1:0][W_BYTE-1:0] i_data
 );
     is_c_block = 1'b0;
-    if (i_ctrl == 8'hFF & i_data == {8{SYM_IDLE}}) begin
+    if (i_ctrl == 8'b00000000 & i_data[0] == SYM_IDLE)
         is_c_block = 1'b1;
-    end
 endfunction
 
 // Start character on 0th or 4th byte
@@ -53,8 +51,7 @@ function automatic is_s4_block(
     input logic [N_BYTES_PER_BLK-1:0][W_BYTE-1:0] i_data
 );
     is_s4_block = 1'b0;
-    if (i_ctrl == 8'b00011111 & 
-        i_data[4:0] == {SYM_START, {4{SYM_IDLE}}}) 
+    if (i_ctrl == 8'b00011111 & i_data[4] == SYM_START) 
         is_s4_block = 1'b1;
 endfunction
 
@@ -66,8 +63,7 @@ function automatic is_t0_block(
     input logic [N_BYTES_PER_BLK-1:0][W_BYTE-1:0] i_data
 );
     is_t0_block = 1'b0;
-    if (i_ctrl == 8'b11111111 &
-        i_data[7:0] == {{7{SYM_IDLE}}, SYM_TERM})
+    if (i_ctrl == 8'b11111111 & i_data[0] == SYM_TERM)
         is_t0_block = 1'b1;
 endfunction
 
@@ -79,8 +75,7 @@ function automatic is_t1_block(
     input logic [N_BYTES_PER_BLK-1:0][W_BYTE-1:0] i_data
 );
     is_t1_block = 1'b0;
-    if (i_ctrl == 8'b11111110 & 
-        i_data[7:1] == {{6{SYM_IDLE}}, SYM_TERM})
+    if (i_ctrl == 8'b11111110 & i_data[1] == SYM_TERM)
         is_t1_block = 1'b1;
 endfunction
 
@@ -92,8 +87,7 @@ function automatic is_t2_block(
     input logic [N_BYTES_PER_BLK-1:0][W_BYTE-1:0] i_data
 );
     is_t2_block = 1'b0;
-    if (i_ctrl == 8'b11111100 & 
-        i_data[7:2] == {{5{SYM_IDLE}}, SYM_TERM})
+    if (i_ctrl == 8'b11111100 & i_data[2] == SYM_TERM)
         is_t2_block = 1'b1;
 endfunction
 
@@ -105,8 +99,7 @@ function automatic is_t3_block(
     input logic [N_BYTES_PER_BLK-1:0][W_BYTE-1:0] i_data
 );
     is_t3_block = 1'b0;
-    if (i_ctrl == 8'b11111000 & 
-        i_data[7:3] == {{4{SYM_IDLE}}, SYM_TERM})
+    if (i_ctrl == 8'b11111000 & i_data[3] == SYM_TERM)
         is_t3_block = 1'b1;
 endfunction
 
@@ -118,8 +111,7 @@ function automatic is_t4_block(
     input logic [N_BYTES_PER_BLK-1:0][W_BYTE-1:0] i_data
 );
     is_t4_block = 1'b0;
-    if (i_ctrl == 8'b11110000 & 
-        i_data[7:4] == {{3{SYM_IDLE}}, SYM_TERM})
+    if (i_ctrl == 8'b11110000 & i_data[4] == SYM_TERM)
         is_t4_block = 1'b1;
 endfunction
 
@@ -131,8 +123,7 @@ function automatic is_t5_block(
     input logic [N_BYTES_PER_BLK-1:0][W_BYTE-1:0] i_data
 );
     is_t5_block = 1'b0;
-    if (i_ctrl == 8'b11100000 & 
-        i_data[7:5] == {{2{SYM_IDLE}}, SYM_TERM})
+    if (i_ctrl == 8'b11100000 & i_data[5] == SYM_TERM)
         is_t5_block = 1'b1;
 endfunction
 
@@ -144,8 +135,7 @@ function automatic is_t6_block(
     input logic [N_BYTES_PER_BLK-1:0][W_BYTE-1:0] i_data
 );
     is_t6_block = 1'b0;
-    if (i_ctrl == 8'b11000000 & 
-        i_data[7:5] == {SYM_IDLE, SYM_TERM})
+    if (i_ctrl == 8'b11000000 & i_data[6] == SYM_TERM)
         is_t6_block = 1'b1;
 endfunction
 
@@ -157,8 +147,7 @@ function automatic is_t7_block(
     input logic [N_BYTES_PER_BLK-1:0][W_BYTE-1:0] i_data
 );
     is_t7_block = 1'b0;
-    if (i_ctrl == 8'b11000000 & 
-        i_data[7:5] == {SYM_IDLE, SYM_TERM})
+    if (i_ctrl == 8'b10000000 & i_data[7] == SYM_TERM)
         is_t7_block = 1'b1;
 endfunction
 
@@ -170,7 +159,7 @@ function automatic void generate_blk(
 );
     o_sync_data = SYNC_CTRL;
     // Default is error block in case nothing matches
-    o_pld_blk = {N_BYTES_PER_BLK{CODE_ERR}};
+    o_pld_blk = {8{CODE_ERR}, C_TYPE};
     case (1'b1)
        // DDDDDDDD
        is_data_block(i_ctrl): begin
@@ -246,28 +235,36 @@ logic [N_TRANS_PER_BLK-1:0][N_CHANNELS-1:0] d_ctrl, q_ctrl;
 logic [N_TRANS_PER_BLK-1:0][W_DATA-1:0] d_data, q_data;
 logic [W_SYNC-1:0] d_sync_data, q_sync_data;
 logic [N_TRANS_PER_BLK-1:0][W_DATA-1:0] d_pld_blk, q_pld_blk;
+logic err;
 
 always_comb begin : main_logic 
+    // error coming from MAC layer will always have
+    // all channel data as error, so it's enough to check 1
+    err = i_xgmii_ctrl[0] & i_xgmii_data[0] == SYM_ERR;
+
+    d_ctrl = q_ctrl;
+    d_data = q_data;
+
     d_ctrl[i_trans_cnt] = i_xgmii_ctrl;
     d_data[i_trans_cnt] = i_xgmii_data;
     d_sync_data = q_sync_data;
     d_pld_blk   = q_pld_blk;
     if (i_trans_cnt == N_TRANS_PER_BLK-1) begin
-        generate_blk(.i_ctrl(d_ctrl),
-                     .i_data(d_data),
-                     .o_sync_data(d_sync_data),
-                     .o_pld_blk(d_pld_blk));
+        if (!err) begin
+            generate_blk(.i_ctrl(d_ctrl),
+                         .i_data(d_data),
+                         .o_sync_data(d_sync_data),
+                         .o_pld_blk(d_pld_blk));
+        end
+        else begin
+            d_sync_data = SYNC_CTRL;
+            d_pld_blk = {8{CODE_ERR}, C_TYPE};
+        end
     end
 end
 
 always_ff @(posedge i_clk) begin
-    if (i_reset) begin
-        q_ctrl <= '0;
-        q_data <= '0;
-        q_sync_data <= SYNC_CTRL;
-        q_pld_blk <= {{8{CODE_IDLE}}, C_TYPE};
-    end
-    else if (i_clk_en) begin
+    if (i_clk_en) begin
         q_ctrl <= d_ctrl;
         q_data <= d_data;
         q_sync_data <= d_sync_data;

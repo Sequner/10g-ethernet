@@ -1,4 +1,3 @@
-import cmn_params::*;
 import mac_params::*;
 
 module mac_tx_ctrl(
@@ -110,7 +109,9 @@ end
 // Show which HDR part to generate
 always_comb begin : hdr_id_ctrl
     d_hdr_id = q_hdr_id;
-    if (o_gen_hdr)
+    if (reset_states)
+        d_hdr_id = '0;
+    else if (o_gen_hdr)
         d_hdr_id += 1;
 end
 
@@ -252,8 +253,10 @@ always_comb begin : fsm_ctrl
         ST_INIT: begin
             // TODO: add start at 0th and 4th byte support
             // by turning the ready signal on and off (for W_DATA==16)
-            if (!data_rcvd & !term_rcvd)
+            if (!data_rcvd & !term_rcvd) begin
                 o_gen_idle = 1'b1;
+                reset_states = 1'b1;
+            end
             else begin
                 o_gen_hdr = 1'b1;
                 d_state = ST_WAIT_HDR;
@@ -348,11 +351,7 @@ end
 always_ff @(posedge i_clk) begin : reg_ctrl
     if (i_reset) begin
         q_state <= ST_INIT;
-        q_hdr_id <= '0;
-        q_pld_cnt <= INIT_MIN_PLD_CNT;
-        q_crc_id <= '0;
-        q_ifg_cnt <= '0;
-        q_tready <= '1;
+        q_tready <= '0;
     end
     else if (i_clk_en) begin
         q_state  <= d_state;

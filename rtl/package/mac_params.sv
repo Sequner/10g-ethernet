@@ -1,19 +1,26 @@
 package mac_params;
 
+import cmn_params::*;
+
 // AXI-Stream interface
 localparam W_SYMBOL = W_BYTE;
 localparam N_SYMBOLS = W_DATA / W_SYMBOL;
 
-// XGMII interface
-// Design assumes XGMII width == W_DATA
-parameter N_CHANNELS = W_DATA / W_BYTE;
-
 // --- Localparams --- //
+// CRC
+localparam W_CRC = 32;
+localparam N_CRC_BYTE = W_CRC / W_BYTE;
+localparam CRC_RESET = 32'hFFFFFFFF;
+// inserting inverse correct CRC always results in this value
+// https://stackoverflow.com/questions/58393307/verification-of-a-crc-checksum-against-zero 
+localparam CRC_MAGIC_NUM = 32'h2144DF1C;
+
 // MIN PLD Counter
 localparam N_MIN_PLD   = 64;
 localparam N_MIN_TRANS = N_MIN_PLD / N_SYMBOLS;
 localparam W_MIN_TRANS = $clog2(N_MIN_TRANS);
 localparam INIT_MIN_PLD_CNT = W_CRC / W_DATA;
+
 // MAC HDR 
 localparam MAC_HDR_SIZE  = 64;
 localparam MAC_HDR_CNT   = MAC_HDR_SIZE / W_DATA;
@@ -24,18 +31,13 @@ localparam MAC_HDR_DATA = {SYM_SFD,   SYM_PREAM,
                            SYM_PREAM, SYM_PREAM, 
                            SYM_PREAM, SYM_START};
 localparam MAC_HDR_CTRL = 8'h01;
+
 // MAC TX Buffer 
 localparam MAC_TX_BUF_SIZE = 64; // same as header
 localparam N_MAC_TX_BUF = MAC_TX_BUF_SIZE / W_DATA;
 localparam W_MAC_TX_BUF = W_DATA + N_CHANNELS;
 localparam W_MAC_TX_BUF_CNT = $clog2(N_MAC_TX_BUF);
-// CRC
-localparam W_CRC = 32;
-localparam N_CRC_BYTE = W_CRC / W_BYTE;
-localparam CRC_RESET = 32'hFFFFFFFF;
-// inserting inverse correct CRC always results in this value
-// https://stackoverflow.com/questions/58393307/verification-of-a-crc-checksum-against-zero 
-localparam CRC_MAGIC_NUM = 32'h2144DF1C;
+
 // Inter-frame Gap (IFG)
 localparam W_IFG = 96;
 localparam N_IFG_TRANS = W_IFG / W_DATA;

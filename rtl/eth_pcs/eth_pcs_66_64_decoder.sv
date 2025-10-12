@@ -1,4 +1,3 @@
-import cmn_params::*;
 import eth_pcs_params::*;
 
 module eth_pcs_66_64_decoder (
@@ -150,6 +149,10 @@ logic [N_TRANS_PER_BLK-1:0][W_DATA-1:0] d_data_blk, q_data_blk;
 
 always_comb begin : decoder_ctrl
     d_hdr = q_hdr;
+    d_pld_blk = q_pld_blk;
+    d_ctrl_blk = q_ctrl_blk;
+    d_data_blk = q_data_blk;
+
     if (i_grbx_hdr_valid) begin // if hdr is valid, reset trans_cnt
         d_hdr = i_grbx_hdr;
         d_trans_cnt = '0;
@@ -158,7 +161,6 @@ always_comb begin : decoder_ctrl
         d_trans_cnt = q_trans_cnt + 1'b1;
     end
 
-    d_pld_blk = q_pld_blk;
     d_pld_blk[d_trans_cnt] = i_descr_data;
     if (d_hdr == SYNC_DATA) begin
         d_ctrl_blk[d_trans_cnt] = '0;

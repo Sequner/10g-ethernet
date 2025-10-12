@@ -10,6 +10,10 @@ localparam N_TRANS_PER_BLK = W_BLK / W_DATA;
 localparam W_TRANS_PER_BLK = $clog2(N_TRANS_PER_BLK);
 localparam N_BYTES_PER_TRANS = W_DATA / W_BYTE;
 
+// XGMII interface
+// Design assumes XGMII width == W_DATA
+parameter N_CHANNELS = W_DATA / W_BYTE;
+
 // Symbols
 localparam SYM_IDLE  = 8'h07;
 localparam SYM_START = 8'hFB;
