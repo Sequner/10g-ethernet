@@ -14,8 +14,8 @@ localparam W_TX_GEARBOX_CNT = $clog2(TX_GEARBOX_CNT);
 localparam W_TX_GEARBOX_BUF = W_DATA*2;
 
 // RX Block Synch
-localparam SH_VAL_TH = 64;
-localparam W_SH_VAL_TH = $clog2(SH_VAL_TH);
+localparam SH_TH = 64;
+localparam W_SH_TH = $clog2(SH_TH);
 localparam SH_INVAL_TH = 16;
 localparam W_SH_INVAL_TH = $clog2(SH_INVAL_TH);
 // RX Gearbox

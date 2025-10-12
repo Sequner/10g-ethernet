@@ -10,10 +10,12 @@ module eth_pcs_rx_block_synch (
     output logic o_slip
 );
 
-logic [W_SH_VAL_TH-1:0] d_sh_cnt, q_sh_cnt;
+logic [W_SH_TH-1:0] d_sh_cnt, q_sh_cnt;
 logic [W_SH_INVAL_TH-1:0] d_sh_inval_cnt, q_sh_inval_cnt;
 logic d_blk_lock, q_blk_lock;
 logic slip;
+// for relaxing timing constraints
+logic q_almost_sh_th, q_almost_sh_inval_th;
     
 always_comb begin : header_cnt
     d_blk_lock = q_blk_lock;
@@ -22,7 +24,7 @@ always_comb begin : header_cnt
 
     slip = '0;
     if (i_sync_hdr == SYNC_CTRL || i_sync_hdr == SYNC_DATA) begin
-        if (q_sh_cnt == SH_VAL_TH-1) begin
+        if (q_almost_sh_th) begin
             d_sh_inval_cnt = '0;
             if (q_sh_inval_cnt == '0)
                 d_blk_lock = 1'b1;
@@ -30,12 +32,12 @@ always_comb begin : header_cnt
     end
     else begin
         d_sh_inval_cnt += 1;
-        if ((q_sh_inval_cnt == SH_INVAL_TH-1) | !q_blk_lock) begin
+        if (q_almost_sh_inval_th | !q_blk_lock) begin
             slip = i_valid; // if hdr is valid, output 1
             d_blk_lock = '0;
             d_sh_cnt = '0;
         end
-        else if (q_sh_cnt == SH_VAL_TH-1) begin
+        else if (q_almost_sh_th) begin
             d_sh_inval_cnt = '0;
         end
     end
@@ -51,6 +53,8 @@ always_ff @(posedge i_clk) begin
         q_sh_cnt <= d_sh_cnt;
         q_sh_inval_cnt <= d_sh_inval_cnt;
         q_blk_lock <= d_blk_lock;
+        q_almost_sh_th <= (d_sh_cnt == SH_TH-1);
+        q_almost_sh_inval_th <= (d_sh_inval_cnt == SH_INVAL_TH-1);
     end
 end
 
