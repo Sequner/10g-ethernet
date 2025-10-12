@@ -24,12 +24,13 @@ function automatic void decode_ctrl(
 );
     o_ctrl_blk = '1;
     o_data_blk = {8{SYM_ERR}};
+    // !!! removed control code checks to relax timing
     case (i_pld_blk[7:0])
         // CCCCCCCC
         C_TYPE: begin
+            // if i_pld_blk[63:8] == {8{CODE_IDLE}})
             o_ctrl_blk = '1;
-            if ((i_pld_blk[63:8] == {8{CODE_IDLE}}) | (i_trans_cnt != '1))
-                o_data_blk = {8{SYM_IDLE}};
+            o_data_blk = {8{SYM_IDLE}};
         end
         // SDDDDDDD
         S0_TYPE: begin
@@ -39,101 +40,94 @@ function automatic void decode_ctrl(
         end
         // CCCCSDDD
         S4_TYPE: begin
-            if (i_pld_blk[35:8] == {4{CODE_IDLE}} | i_trans_cnt != '1) begin
-                o_ctrl_blk = 8'h1F;
-                o_data_blk[31:0]  = {4{SYM_IDLE}};
-                o_data_blk[39:32] = SYM_START;
-                o_data_blk[63:40] = i_pld_blk[63:40]; 
-            end
-        end
-        // ODDDSDDD - O codes are ignored in this project, and replaced by errors
-        // however, if they are used, change the implementation
-        OS_TYPE: begin
-            if (i_pld_blk[35:32] == '0 | i_trans_cnt != '1) begin
-                o_ctrl_blk = 8'h1F;
-                o_data_blk[39:32] = SYM_START;
-                o_data_blk[63:40] = i_pld_blk[63:40]; 
-            end
+            // if i_pld_blk[35:8] == {4{CODE_IDLE}}
+            o_ctrl_blk = 8'h1F;
+            o_data_blk[31:0]  = {4{SYM_IDLE}};
+            o_data_blk[39:32] = SYM_START;
+            o_data_blk[63:40] = i_pld_blk[63:40]; 
         end
         // TCCCCCCC
         T0_TYPE: begin
-            if (i_pld_blk[63:15] == {7{CODE_IDLE}} | i_trans_cnt != '1) begin
-                o_data_blk = {8{SYM_IDLE}};
-                o_data_blk[31:24] = 8'h0; // 0 data bytes
-            end
+            // if i_pld_blk[63:15] == {7{CODE_IDLE}}
+            o_data_blk = {8{SYM_IDLE}};
+            o_data_blk[31:24] = 8'h0; // 0 data bytes
         end
         // Terminate type blocks are customized to reduce critical path
         // DTCCCCCC
         T1_TYPE: begin
-            if (i_pld_blk[63:22] == {6{CODE_IDLE}} | i_trans_cnt != '1) begin
-                o_ctrl_blk[0] = '0;
-                o_data_blk = {8{SYM_IDLE}};
-                o_data_blk[7:0] = i_pld_blk[15:8];
-                o_data_blk[31:24] = 8'h1; // 1 data byte
-            end
+            // if i_pld_blk[63:22] == {6{CODE_IDLE}}
+            o_ctrl_blk[0] = '0;
+            o_data_blk = {8{SYM_IDLE}};
+            o_data_blk[7:0] = i_pld_blk[15:8];
+            o_data_blk[31:24] = 8'h1; // 1 data byte
         end
         // DDTCCCCC
         T2_TYPE: begin
-            if (i_pld_blk[63:29] == {5{CODE_IDLE}} | i_trans_cnt != '1) begin
-                o_ctrl_blk[1:0] = '0;
-                o_data_blk = {8{SYM_IDLE}};
-                o_data_blk[15:0]  = i_pld_blk[23:8];
-                o_data_blk[31:24] = 8'h2; // 2 data bytes
-            end
+            // if i_pld_blk[63:29] == {5{CODE_IDLE}}
+            o_ctrl_blk[1:0] = '0;
+            o_data_blk = {8{SYM_IDLE}};
+            o_data_blk[15:0]  = i_pld_blk[23:8];
+            o_data_blk[31:24] = 8'h2; // 2 data bytes
         end
         // DDDTCCCC
         T3_TYPE: begin
-            if (i_pld_blk[63:36] == {4{CODE_IDLE}} | i_trans_cnt != '1) begin
-                o_ctrl_blk[2:0] = '0;
-                o_data_blk = {8{SYM_IDLE}};
-                o_data_blk[23:0] = i_pld_blk[31:8];
-                o_data_blk[31:24] = 8'h3; // 3 data bytes
-            end
+            // if i_pld_blk[63:36] == {4{CODE_IDLE}}
+            o_ctrl_blk[2:0] = '0;
+            o_data_blk = {8{SYM_IDLE}};
+            o_data_blk[23:0] = i_pld_blk[31:8];
+            o_data_blk[31:24] = 8'h3; // 3 data bytes
         end
         // DDDDTCCC
         T4_TYPE: begin
-            if (i_pld_blk[63:43] == {3{CODE_IDLE}} | i_trans_cnt != '1) begin
-                o_ctrl_blk[2:0] = '0;
-                o_ctrl_blk[4] = '0;
-                o_data_blk = {8{SYM_IDLE}};
-                o_data_blk[23:0] = i_pld_blk[31:8];
-                o_data_blk[31:24] = 8'h4; // 4 data bytes
-                o_data_blk[39:32] = i_pld_blk[39:32];
-            end
+            // if i_pld_blk[63:43] == {3{CODE_IDLE}}
+            o_ctrl_blk[2:0] = '0;
+            o_ctrl_blk[4] = '0;
+            o_data_blk = {8{SYM_IDLE}};
+            o_data_blk[23:0] = i_pld_blk[31:8];
+            o_data_blk[31:24] = 8'h4; // 4 data bytes
+            o_data_blk[39:32] = i_pld_blk[39:32];
         end
         // DDDDDTCC
         T5_TYPE: begin
-            if (i_pld_blk[63:44] == {2{CODE_IDLE}} | i_trans_cnt != '1) begin
-                o_ctrl_blk[2:0] = '0;
-                o_ctrl_blk[5:4] = '0;
-                o_data_blk = {8{SYM_IDLE}};
-                o_data_blk[23:0] = i_pld_blk[31:8];
-                o_data_blk[31:24] = 8'h5; // 5 data bytes
-                o_data_blk[47:32] = i_pld_blk[47:32];
-            end
+            // if i_pld_blk[63:44] == {2{CODE_IDLE}}
+            o_ctrl_blk[2:0] = '0;
+            o_ctrl_blk[5:4] = '0;
+            o_data_blk = {8{SYM_IDLE}};
+            o_data_blk[23:0] = i_pld_blk[31:8];
+            o_data_blk[31:24] = 8'h5; // 5 data bytes
+            o_data_blk[47:32] = i_pld_blk[47:32];
         end
         // DDDDDDTC
         T6_TYPE: begin
-            if (i_pld_blk[63:57] == {CODE_IDLE} | i_trans_cnt != '1) begin
-                o_ctrl_blk[2:0] = '0;
-                o_ctrl_blk[6:4] = '0;
-                o_data_blk = {8{SYM_IDLE}};
-                o_data_blk[23:0] = i_pld_blk[31:8];
-                o_data_blk[31:24] = 8'h6; // 6 data bytes
-                o_data_blk[55:32] = i_pld_blk[55:32];
-            end
+            // if i_pld_blk[63:57] == {CODE_IDLE}
+            o_ctrl_blk[2:0] = '0;
+            o_ctrl_blk[6:4] = '0;
+            o_data_blk = {8{SYM_IDLE}};
+            o_data_blk[23:0] = i_pld_blk[31:8];
+            o_data_blk[31:24] = 8'h6; // 6 data bytes
+            o_data_blk[55:32] = i_pld_blk[55:32];
         end
         // DDDDDDDT
         T7_TYPE: begin
-            if (i_pld_blk[63:36] == {4{CODE_IDLE}} | i_trans_cnt != '1) begin
-                o_ctrl_blk[2:0] = '0;
-                o_ctrl_blk[7:4] = '0;
-                o_data_blk = {8{SYM_IDLE}};
-                o_data_blk[23:0] = i_pld_blk[31:8];
-                o_data_blk[31:24] = 8'h7; // 7 data bytes
-                o_data_blk[63:32] = i_pld_blk[63:32];
-            end
+            // if i_pld_blk[63:36] == {4{CODE_IDLE}}
+            o_ctrl_blk[2:0] = '0;
+            o_ctrl_blk[7:4] = '0;
+            o_data_blk = {8{SYM_IDLE}};
+            o_data_blk[23:0] = i_pld_blk[31:8];
+            o_data_blk[31:24] = 8'h7; // 7 data bytes
+            o_data_blk[63:32] = i_pld_blk[63:32];
         end
+        // ODDDSDDD - O codes are ignored in this project,
+        // however, if they are used, change the implementation
+        OS_TYPE: begin
+            // if i_pld_blk[35:32] == '0
+            o_ctrl_blk = 8'h11;
+            o_data_blk[7:0] = '0;
+            o_data_blk[31:8] = i_pld_blk[31:8];
+            o_data_blk[39:32] = SYM_START;
+            o_data_blk[63:40] = i_pld_blk[63:40]; 
+        end
+        // O0_TYPE, O4_TYPE, O04_TYPE - other O codes are skipped
         default: begin
             o_ctrl_blk = '1;
             o_data_blk = {8{SYM_ERR}};
