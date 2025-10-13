@@ -50,7 +50,7 @@ state_t d_state;
 state_t q_state = ST_INIT;
 // AXI-S Ready ctrl
 logic d_tready; 
-logic q_tready = 1'b1;
+logic q_tready = 1'b0;
 // Type of received data through AXI-S I/F
 logic term_rcvd;
 logic data_rcvd;
