@@ -224,7 +224,7 @@ always_comb begin : crc_ctrl
         o_crc_data = s_axis_tdata;
     end
     // if min pld requirement is satisfied
-    else if (term_rcvd & q_pld_cnt >= N_MIN_PLD) begin
+    else if (term_rcvd & q_pld_cnt >= N_MIN_TRANS) begin
         o_crc_en   = s_axis_tkeep;
         o_crc_data = s_axis_tdata;
     end

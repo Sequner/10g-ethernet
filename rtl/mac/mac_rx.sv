@@ -68,8 +68,8 @@ always_comb begin : key_ctrl
     data_rcvd  = (i_xgmii_ctrl == '0);
     // last channel is a control symbol is a customized (non-spec)
     // term symbol for RX-side MAC. See 66_64_decoder code
-    term_rcvd  = (i_xgmii_ctrl == (1<<(N_CHANNELS-1)));
     num_term_data = i_xgmii_data[N_CHANNELS-1]; 
+    term_rcvd  = (i_xgmii_ctrl[N_CHANNELS-1] == 1 & num_term_data < 8);
     // checks if received data belongs to header
     hdr_rcvd = check_hdr(i_xgmii_ctrl, i_xgmii_data, hdr_id); 
 end
@@ -113,7 +113,7 @@ always_comb begin : fsm_ctrl
                 d_pld_cnt += 1'b1;
             else if (term_rcvd) begin
                 d_pld_cnt += num_term_data / N_BYTES_PER_TRANS;
-                d_min_pld_error = (d_pld_cnt < N_MIN_PLD);
+                d_min_pld_error = (d_pld_cnt < N_MIN_TRANS);
                 // only N_CHANNEL-1 bytes of data are received this cycle
                 // {ctrl, data, data, data} in case of W_DATA==32
                 // so if term block has more, they will arrive on the next cycle
