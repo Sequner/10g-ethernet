@@ -45,4 +45,5 @@ async def test_basic_packet(dut):
     packet_keep[-1] = 0x0
     await driver.send_packet(packet_data, packet_keep)
     await Timer(CLK_PERIOD*100)
-    scoreboard.check(s_monitor.captured, m_monitor.captured)
+    scoreboard.check(s_monitor.captured, m_monitor.captured, \
+                     m_monitor.captured_err_flag)
