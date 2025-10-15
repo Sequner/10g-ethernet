@@ -164,7 +164,8 @@ always_ff @(posedge i_clk) begin : ff_ctrl
     if (i_clk_en) begin
         q_state <= d_state;
         q_small_term <= (num_term_data == '0);
-        q_pld_cnt <= d_pld_cnt;
+        // stop incrementing above N_MIN_TRANS to avoid overflow
+        q_pld_cnt <= (q_pld_cnt >= N_MIN_TRANS) ? q_pld_cnt : d_pld_cnt;
         q_min_pld_error <= d_min_pld_error;
         q_hdr_cnt <= d_hdr_cnt;
     end
