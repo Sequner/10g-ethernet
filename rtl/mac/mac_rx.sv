@@ -156,7 +156,7 @@ always_comb begin : output_ctrl
     m_axis_tvalid = (send_axis_data | send_axis_error | send_axis_eof) & i_clk_en;
     m_axis_tdata  = i_xgmii_data;
     m_axis_tkeep  = ~i_xgmii_ctrl; // data symbols are 1, ctrl symbols are 0
-    m_axis_tlast  = send_axis_eof; 
+    m_axis_tlast  = (send_axis_eof | send_axis_error); 
     m_axis_tuser  = send_axis_error;
 end
 
