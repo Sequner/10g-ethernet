@@ -12,7 +12,7 @@ module eth_pcs_scrambler #(
     output logic [W_DATA-1:0] o_scr_data
 );
 
-logic [W_SCR-1:0] d_scr, q_scr, w_scr;
+logic [W_SCR-1:0] w_scr, d_scr, q_scr = '0;
 
 // Scrambler - 32 bits
 function automatic void scramble_32b(

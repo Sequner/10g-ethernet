@@ -58,25 +58,25 @@ logic data_rcvd;
 logic [W_TRANS_PER_BLK-1:0] d_trans_id;
 logic [W_TRANS_PER_BLK-1:0] q_trans_id = INIT_MAC_TRANS_ID;
 // Show which HDR part to generate
-logic [W_MAC_HDR_CNT-1:0] d_hdr_id, q_hdr_id;
+logic [W_MAC_HDR_CNT-1:0] d_hdr_id, q_hdr_id = '0;
 // Min PLD counter - counts the number of full transactions
 // where data_valid/tkeep is all ones
 logic [W_MIN_TRANS:0] d_pld_cnt;
 logic [W_MIN_TRANS:0] q_pld_cnt = INIT_MIN_PLD_CNT;
 // Save tlast data
-logic [N_SYMBOLS-1:0] d_last_valid, q_last_valid;
-logic [N_SYMBOLS-1:0][W_SYMBOL-1:0] d_last_data, q_last_data;
+logic [N_SYMBOLS-1:0] d_last_valid, q_last_valid = '0;
+logic [N_SYMBOLS-1:0][W_SYMBOL-1:0] d_last_data, q_last_data = '0;
 // Data tail & pad Gen
 logic wr_tail_pad;
 logic wr_tail_crc;
 logic wr_pad;
 // CRC Gen
 logic wr_crc;
-logic [$clog2(N_CRC_BYTE):0] d_crc_id, q_crc_id;
+logic [$clog2(N_CRC_BYTE):0] d_crc_id, q_crc_id = '0;
 // Termination Gen
 logic wr_term;
 // IFG Gen
-logic [$clog2(N_IFG_TRANS-1):0] d_ifg_cnt, q_ifg_cnt;
+logic [$clog2(N_IFG_TRANS-1):0] d_ifg_cnt, q_ifg_cnt = '0;
 // Reset counter states
 logic reset_states;
 

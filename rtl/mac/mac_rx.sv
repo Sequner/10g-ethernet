@@ -40,10 +40,10 @@ typedef enum logic [4:0] {
 state_t d_state;
 state_t q_state = ST_INIT;
 // PLD count ctrl
-logic [W_MIN_TRANS:0] d_pld_cnt, q_pld_cnt;
-logic d_min_pld_error, q_min_pld_error;
+logic [W_MIN_TRANS:0] d_pld_cnt, q_pld_cnt = '0;
+logic d_min_pld_error, q_min_pld_error = '0;
 // Current hdr id
-logic [W_MAC_HDR_CNT-1:0] d_hdr_cnt, q_hdr_cnt;
+logic [W_MAC_HDR_CNT-1:0] d_hdr_cnt, q_hdr_cnt = '0;
 logic [W_MAC_HDR_CNT-1:0] hdr_id;
 // Input controls from PCS
 logic error_rcvd;
@@ -157,7 +157,7 @@ always_comb begin : output_ctrl
     m_axis_tdata  = i_xgmii_data;
     m_axis_tkeep  = ~i_xgmii_ctrl; // data symbols are 1, ctrl symbols are 0
     m_axis_tlast  = send_axis_eof; 
-    m_axis_tuser  = ~send_axis_error;
+    m_axis_tuser  = send_axis_error;
 end
 
 always_ff @(posedge i_clk) begin : ff_ctrl

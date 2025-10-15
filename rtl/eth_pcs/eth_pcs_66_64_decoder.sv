@@ -135,12 +135,13 @@ function automatic void decode_ctrl(
     endcase
 endfunction
 
-logic [W_TRANS_PER_BLK-1:0] d_trans_cnt, q_trans_cnt;
-logic [N_TRANS_PER_BLK-1:0][W_DATA-1:0] d_pld_blk, q_pld_blk; // rolling data buffer
-logic [W_SYNC-1:0] d_hdr, q_hdr; // buffered hdr
+logic [W_TRANS_PER_BLK-1:0] d_trans_cnt, q_trans_cnt = '0;
+// rolling data buffer
+logic [N_TRANS_PER_BLK-1:0][W_DATA-1:0] d_pld_blk, q_pld_blk = '0;
+logic [W_SYNC-1:0] d_hdr, q_hdr = '0; // buffered hdr
 
-logic [N_TRANS_PER_BLK-1:0][N_CHANNELS-1:0] d_ctrl_blk, q_ctrl_blk;
-logic [N_TRANS_PER_BLK-1:0][W_DATA-1:0] d_data_blk, q_data_blk;
+logic [N_TRANS_PER_BLK-1:0][N_CHANNELS-1:0] d_ctrl_blk, q_ctrl_blk = '0;
+logic [N_TRANS_PER_BLK-1:0][W_DATA-1:0] d_data_blk, q_data_blk = '0;
 
 always_comb begin : decoder_ctrl
     d_hdr = q_hdr;

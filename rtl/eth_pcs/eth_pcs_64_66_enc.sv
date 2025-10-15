@@ -232,10 +232,10 @@ function automatic void generate_blk(
     endcase
 endfunction
 
-logic [N_TRANS_PER_BLK-1:0][N_CHANNELS-1:0] d_ctrl, q_ctrl;
-logic [N_TRANS_PER_BLK-1:0][W_DATA-1:0] d_data, q_data;
-logic [W_SYNC-1:0] d_sync_data, q_sync_data;
-logic [N_TRANS_PER_BLK-1:0][W_DATA-1:0] d_pld_blk, q_pld_blk;
+logic [N_TRANS_PER_BLK-1:0][N_CHANNELS-1:0] d_ctrl, q_ctrl = '0;
+logic [N_TRANS_PER_BLK-1:0][W_DATA-1:0] d_data, q_data = '0;
+logic [W_SYNC-1:0] d_sync_data, q_sync_data = '0;
+logic [N_TRANS_PER_BLK-1:0][W_DATA-1:0] d_pld_blk, q_pld_blk = '0;
 logic err;
 
 always_comb begin : main_logic 

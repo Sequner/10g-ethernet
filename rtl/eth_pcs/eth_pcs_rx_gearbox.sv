@@ -12,17 +12,17 @@ module eth_pcs_rx_gearbox (
 );
 
 // buffers
-logic [W_DATA-1:0] q_data_buf; // data received in prev cycle
-logic [W_SYNC-1:0] d_hdr_buf, q_hdr_buf; // hdr to be output
-logic d_hdr_valid, q_hdr_valid;
+logic [W_DATA-1:0] q_data_buf = '0; // data received in prev cycle
+logic [W_SYNC-1:0] d_hdr_buf, q_hdr_buf = '0; // hdr to be output
+logic d_hdr_valid, q_hdr_valid = '0;
 // odd flag - header candidate is in odd bits of i_pma_data ([1,2] or [3,4] etc)
-logic q_hdr_odd;
+logic q_hdr_odd = '0;
 // block sync signals
 logic slip;
 // tracks which part of 64b block is being received
-logic [W_TRANS_PER_BLK-1:0] q_trans_cnt;
+logic [W_TRANS_PER_BLK-1:0] q_trans_cnt = '0;
 // offset to obtain header
-logic [W_RX_GEARBOX_OFFSET-1:0] d_hdr_offset, q_hdr_offset;
+logic [W_RX_GEARBOX_OFFSET-1:0] d_hdr_offset, q_hdr_offset = '0;
 // offset to obtain data: uses header offset but lags it by 1 cycle
 // because when header arrives only 1 portion of W_DATA width,
 // another portion of data comes on the next cycle
@@ -31,7 +31,7 @@ logic [W_RX_GEARBOX_OFFSET-1:0] d_hdr_offset, q_hdr_offset;
 //              i_pma_data = [D1, D0, H2, ...] -> header position changes
 //                                                but we use the old hdr position
 //                                                to get data properly 
-logic [W_RX_GEARBOX_OFFSET-1:0] q_data_offset;
+logic [W_RX_GEARBOX_OFFSET-1:0] q_data_offset = '0;
 // clk_en: by default, hdr_valid is raised every 2 cycles for W_DATA=32 
 // However, we need to skip one count when hdr is at offset 0
 // because next 2 i_pma_data is gonna be fully data without headers.

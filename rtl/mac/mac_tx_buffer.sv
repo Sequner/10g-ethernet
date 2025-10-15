@@ -18,8 +18,7 @@ module mac_tx_buffer(
 );
 
 // --- Main Logic --- //
-logic empty;
-logic [N_MAC_TX_BUF-1:0][W_MAC_TX_BUF-1:0] d_buf, q_buf;
+logic [N_MAC_TX_BUF-1:0][W_MAC_TX_BUF-1:0] d_buf, q_buf = '0;
 logic [W_MAC_TX_BUF_CNT:0] d_rptr, q_rptr; // 1 bit added for wrap around
 logic [W_MAC_TX_BUF_CNT:0] d_wptr, q_wptr;
 logic [W_MAC_TX_BUF_CNT-1:0] raddr;
@@ -32,7 +31,7 @@ always_comb begin : read_port
     d_rptr = q_rptr;
     if (i_clr)
         d_rptr = 0;
-    else if (i_ren & !empty)
+    else if (i_ren & !o_empty)
         d_rptr += 1;
 end
 
