@@ -17,7 +17,7 @@ module mac_tx_ctrl(
     output logic o_gen_data,
     output logic o_gen_idle,
     output logic o_gen_ifg,
-    output logic o_gen_error,
+    output logic o_gen_error, // not used for now
     // Buffer Ctrl
     input  logic i_buf_empty,
     output logic o_buf_clear,
@@ -49,7 +49,6 @@ typedef enum logic [N_STATE-1:0] {
 state_t d_state; 
 state_t q_state = ST_INIT;
 // AXI-S Ready ctrl
-logic d_tready; 
 logic q_tready = 1'b0;
 // Type of received data through AXI-S I/F
 logic term_rcvd;
@@ -99,6 +98,12 @@ always_comb begin : axis2ctrl_converter
             else $fatal("transaction is not aligned properly");
         end
     end
+    // when a transaction is started
+    // q_tready goes low only when tlast is received
+    // so, if q_tready is high, and tvalid is low
+    // it means the transaction is not finished, but paused
+    if (!s_axis_tvalid & q_tready & q_state != ST_INIT)
+        $fatal("transaction is paused without tlast");
 end
 
 // Which part of 64B is generated
@@ -280,14 +285,6 @@ always_comb begin : fsm_ctrl
             o_gen_data = 1'b1;
             if (term_rcvd | !q_tready)
                 d_state = ST_TAIL;
-            // if term is not rcvd and data is not received
-            // it's an error. Data must be sent continuously
-            else begin
-                assert(data_rcvd)
-                else begin
-                    $fatal("data transmission stopped without tlast");
-                end
-            end
         end
         ST_TAIL: begin
             o_gen_data = 1'b1;
@@ -376,6 +373,6 @@ always_ff @(posedge i_clk) begin : reg_ctrl
     end
 end
 
-assign s_axis_tready = (i_clk_en & !o_gen_error) ? q_tready : '0;
+assign s_axis_tready = (i_clk_en) ? q_tready : '0;
 
 endmodule : mac_tx_ctrl
