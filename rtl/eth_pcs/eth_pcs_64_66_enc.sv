@@ -29,7 +29,7 @@ function automatic is_c_block(
     input logic [N_BYTES_PER_BLK-1:0][W_BYTE-1:0] i_data
 );
     is_c_block = 1'b0;
-    if (i_ctrl == 8'b00000000 & i_data[0] == SYM_IDLE)
+    if (i_ctrl == 8'b11111111 & i_data[0] == SYM_IDLE)
         is_c_block = 1'b1;
 endfunction
 

@@ -173,12 +173,13 @@ always_comb begin : decoder_ctrl
 end
 
 always_ff @(posedge i_clk) begin : ff_ctrl
-    if (i_reset)
+    if (i_reset) begin
         // Upon reset, send idle to MAC RX.
         // In case there is an ongoing data transfre,
         // it will cause an error in AXIS transaction.
         q_ctrl_blk <= '1;
         q_data_blk <= {8{SYM_IDLE}};
+    end
     else if (i_clk_en) begin
         q_trans_cnt <= d_trans_cnt;
         q_hdr <= d_hdr;
