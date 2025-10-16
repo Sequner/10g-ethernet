@@ -3,7 +3,8 @@ import eth_pcs_params::*;
 
 module eth_pcs_scrambler #(
     // 0 - scrambler, 1 - descrambler
-    parameter SCR_MODE = 0
+    parameter SCR_MODE = 0,
+    parameter SCR_BYPASS = 0
 ) (
     input i_clk,
     input i_reset,
@@ -59,11 +60,15 @@ always_comb begin : main_logic
     d_scr = q_scr;
     // TODO: add scrambler function for 16 bits
     scramble_32b(i_pld_data, q_scr, w_scr);
-    o_scr_data = reverse(w_scr[W_DATA-1:0]);
     if (SCR_MODE == 0) // scrambler
         d_scr = w_scr;
     else // descrambler
         d_scr = {q_scr[W_DATA-1:0], reverse(i_pld_data)};
+
+    if (SCR_BYPASS == 0)
+        o_scr_data = reverse(w_scr[W_DATA-1:0]);
+    else
+        o_scr_data = i_pld_data;
 end
 
 always_ff @(posedge i_clk) begin

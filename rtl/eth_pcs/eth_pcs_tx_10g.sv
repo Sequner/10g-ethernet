@@ -27,7 +27,8 @@ eth_pcs_64_66_enc u_pcs_64_66_enc (
 );
 
 eth_pcs_scrambler #(
-    .SCR_MODE(0)
+    .SCR_MODE(0),
+    .SCR_BYPASS(0)
 ) 
 u_pcs_scrambler (
     .i_clk(i_clk),
