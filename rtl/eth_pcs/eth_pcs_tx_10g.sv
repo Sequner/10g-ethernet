@@ -41,7 +41,7 @@ u_pcs_scrambler (
 eth_pcs_tx_gearbox u_pcs_tx_gearbox (
     .i_clk(i_clk),
     .i_reset(i_reset),
-    .i_sync_data(sync_data),
+    .i_sync_hdr(sync_data),
     .i_scr_data(scr_data),
     .o_clk_en(o_clk_en),
     .o_pma_data(o_pma_data),

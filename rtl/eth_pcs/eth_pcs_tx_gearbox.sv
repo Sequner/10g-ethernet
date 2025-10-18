@@ -4,7 +4,7 @@ import eth_pcs_params::*;
 module eth_pcs_tx_gearbox(
     input i_clk,
     input i_reset,
-    input [W_SYNC-1:0] i_sync_data,
+    input [W_SYNC-1:0] i_sync_hdr,
     input [W_DATA-1:0] i_scr_data,
     output o_clk_en,
     output [W_DATA-1:0] o_pma_data,
@@ -41,19 +41,22 @@ end
 integer id;
 
 always_comb begin : gearbox_buf_ctrl 
-    id = {q_stop_cnt[W_TX_GEARBOX_CNT:W_TRANS_PER_BLK], 1'b0};
+    id = {q_stop_cnt[W_TX_GEARBOX_CNT-1:W_TRANS_PER_BLK], 1'b0};
     // The first W_DATA bits of q_buf are sent to PMA.
     // Hence, they are removed from the buffer
-    d_buf = q_buf >> W_DATA;
+    d_buf = {'0, q_buf[W_TX_GEARBOX_BUF-1:W_DATA]};
     // at trans_cnt 0, gearbox receives a new block
     // so we save W_DATA+W_SYNC bits
     // at trans_cnt > 0 , id + 2 because once header + data 
     // were received, there are 2 more extra bits 
-    if (o_trans_cnt == '0) // turn (H2, H1, D31...D0) into (D0...D31, H1, H2)
-        d_buf[id+:(W_DATA+W_SYNC)] = concat_reverse(i_sync_data, i_scr_data); 
-    else // reverse data
-        d_buf[(id+2)+:W_DATA] = reverse(i_scr_data);
+    // when o_clk_en is 0, the incoming data should be skipped
     // Note: reversing is done only for the sake of convenience during indexing
+    if (o_clk_en) begin
+        if (o_trans_cnt == '0) // turn (H2, H1, D31...D0) into (D0...D31, H1, H2)
+            d_buf[id+:W_SYNC] = reverse_sync(i_sync_hdr); 
+        // reverse data
+        d_buf[(id+2)+:W_DATA] = reverse(i_scr_data);
+    end
 end
 
 always_ff @(posedge i_clk) begin

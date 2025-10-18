@@ -71,6 +71,12 @@ function automatic logic [W_SYNC+W_DATA-1:0] concat_reverse(
         concat_reverse[i] = concat[W_SYNC+W_DATA-1-i];
 endfunction
 
-
+// Reverse W_SYNC
+function automatic logic [W_SYNC-1:0] reverse_sync(
+    input [W_SYNC-1:0] i_sync
+);
+    for (int i=0; i<W_SYNC; i++)
+        reverse_sync[i] = i_sync[W_SYNC-1-i];
+endfunction
 
 endpackage
