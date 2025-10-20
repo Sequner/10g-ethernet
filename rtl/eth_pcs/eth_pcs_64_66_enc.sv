@@ -162,73 +162,73 @@ function automatic void generate_blk(
     // Default is error block in case nothing matches
     o_pld_blk = {{8{CODE_ERR}}, C_TYPE};
     case (1'b1)
-       // DDDDDDDD
-       is_data_block(i_ctrl): begin
-           o_sync_data = SYNC_DATA;
-           o_pld_blk = i_data;
-       end
-       // CCCCCCCC
-       is_c_block(i_ctrl, i_data): begin
-           o_pld_blk[7:0] = C_TYPE;
-           o_pld_blk[63:8] = {8{CODE_IDLE}};
-       end
-       // SDDDDDDD
-       is_s0_block(i_ctrl, i_data): begin
-           o_pld_blk[7:0] = S0_TYPE;
-           o_pld_blk[63:8] = i_data[63:8];
-       end
-       // CCCCSDDD
-       is_s4_block(i_ctrl, i_data): begin
-           o_pld_blk[7:0] = S4_TYPE;
-           o_pld_blk[39:8] = '0;
-           o_pld_blk[63:40] = i_data[63:40];
-       end
-       // TCCCCCCC
-       is_t0_block(i_ctrl, i_data): begin
-           o_pld_blk[7:0] = T0_TYPE;
-           o_pld_blk[63:8] = '0;
-       end
-       // DTCCCCCC
-       is_t1_block(i_ctrl, i_data): begin
-           o_pld_blk[7:0] = T1_TYPE;
-           o_pld_blk[15:8] = i_data[7:0];
-           o_pld_blk[63:16] = '0;
-       end
-       // DDTCCCCC
-       is_t2_block(i_ctrl, i_data): begin
-           o_pld_blk[7:0] = T2_TYPE;
-           o_pld_blk[23:8] = i_data[15:0];
-           o_pld_blk[63:24] = '0;
-       end
-       // DDDTCCCC
-       is_t3_block(i_ctrl, i_data): begin
-           o_pld_blk[7:0] = T3_TYPE;
-           o_pld_blk[31:8] = i_data[23:0];
-           o_pld_blk[63:32] = '0;
-       end
-       // DDDDTCCC
-       is_t4_block(i_ctrl, i_data): begin
-           o_pld_blk[7:0] = T4_TYPE;
-           o_pld_blk[39:8] = i_data[31:0];
-           o_pld_blk[63:40] = '0;
-       end
-       // DDDDDTCC
-       is_t5_block(i_ctrl, i_data): begin
-           o_pld_blk[7:0] = T5_TYPE;
-           o_pld_blk[47:8] = i_data[39:0];
-           o_pld_blk[63:48] = '0;
-       end
-       // DDDDDDTC
-       is_t6_block(i_ctrl, i_data): begin
-           o_pld_blk[7:0] = T6_TYPE;
-           o_pld_blk[55:8] = i_data[47:0];
-           o_pld_blk[63:56] = '0;
-       end
-       // DDDDDDDT
-       is_t7_block(i_ctrl, i_data): begin
-           o_pld_blk[7:0] = T7_TYPE;
-           o_pld_blk[63:8] = i_data[55:0];
-       end
+        // DDDDDDDD
+        is_data_block(i_ctrl): begin
+            o_sync_data = SYNC_DATA;
+            o_pld_blk = i_data;
+        end
+        // CCCCCCCC
+        is_c_block(i_ctrl, i_data): begin
+            o_pld_blk[7:0] = C_TYPE;
+            o_pld_blk[63:8] = {8{CODE_IDLE}};
+        end
+        // SDDDDDDD
+        is_s0_block(i_ctrl, i_data): begin
+            o_pld_blk[7:0] = S0_TYPE;
+            o_pld_blk[63:8] = i_data[63:8];
+        end
+        // CCCCSDDD
+        is_s4_block(i_ctrl, i_data): begin
+            o_pld_blk[7:0] = S4_TYPE;
+            o_pld_blk[39:8] = '0;
+            o_pld_blk[63:40] = i_data[63:40];
+        end
+        // TCCCCCCC
+        is_t0_block(i_ctrl, i_data): begin
+            o_pld_blk[7:0] = T0_TYPE;
+            o_pld_blk[63:8] = '0;
+        end
+        // DTCCCCCC
+        is_t1_block(i_ctrl, i_data): begin
+            o_pld_blk[7:0] = T1_TYPE;
+            o_pld_blk[15:8] = i_data[7:0];
+            o_pld_blk[63:16] = '0;
+        end
+        // DDTCCCCC
+        is_t2_block(i_ctrl, i_data): begin
+            o_pld_blk[7:0] = T2_TYPE;
+            o_pld_blk[23:8] = i_data[15:0];
+            o_pld_blk[63:24] = '0;
+        end
+        // DDDTCCCC
+        is_t3_block(i_ctrl, i_data): begin
+            o_pld_blk[7:0] = T3_TYPE;
+            o_pld_blk[31:8] = i_data[23:0];
+            o_pld_blk[63:32] = '0;
+        end
+        // DDDDTCCC
+        is_t4_block(i_ctrl, i_data): begin
+            o_pld_blk[7:0] = T4_TYPE;
+            o_pld_blk[39:8] = i_data[31:0];
+            o_pld_blk[63:40] = '0;
+        end
+        // DDDDDTCC
+        is_t5_block(i_ctrl, i_data): begin
+            o_pld_blk[7:0] = T5_TYPE;
+            o_pld_blk[47:8] = i_data[39:0];
+            o_pld_blk[63:48] = '0;
+        end
+        // DDDDDDTC
+        is_t6_block(i_ctrl, i_data): begin
+            o_pld_blk[7:0] = T6_TYPE;
+            o_pld_blk[55:8] = i_data[47:0];
+            o_pld_blk[63:56] = '0;
+        end
+        // DDDDDDDT
+        is_t7_block(i_ctrl, i_data): begin
+            o_pld_blk[7:0] = T7_TYPE;
+            o_pld_blk[63:8] = i_data[55:0];
+        end
     endcase
 endfunction
 
