@@ -5,8 +5,8 @@ import cmn_params::*;
 localparam W_PLD_BLK = W_BLK;
 
 localparam W_SYNC    = 2;
-localparam SYNC_DATA = 2'b01;
-localparam SYNC_CTRL = 2'b10;
+localparam SYNC_DATA = 2'b10;
+localparam SYNC_CTRL = 2'b01;
 
 // TX Gearbox
 localparam TX_GEARBOX_CNT = 32;
