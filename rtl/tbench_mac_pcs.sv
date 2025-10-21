@@ -35,10 +35,15 @@ logic [W_DATA-1:0] i_rx_pma_data;
 logic [W_DATA+PMA_DATA_SHIFT-1:0] shifted_data;
 
 always_ff @(posedge clk) begin : shift_ctrl
-    shifted_data <= (shifted_data << W_DATA) + o_tx_pma_data;
+    if (PMA_DATA_SHIFT == 0) begin
+        shifted_data <= o_tx_pma_data;
+    end
+    else begin
+        shifted_data <= {o_tx_pma_data, shifted_data[W_DATA+PMA_DATA_SHIFT-1:W_DATA]};
+    end
 end
 
-assign i_rx_pma_data = shifted_data[W_DATA+PMA_DATA_SHIFT-1-:W_DATA]; // loopback
+assign i_rx_pma_data = shifted_data[W_DATA-1:0]; // loopback
 
 assign i_tx_clk = clk;
 assign i_tx_reset = reset;

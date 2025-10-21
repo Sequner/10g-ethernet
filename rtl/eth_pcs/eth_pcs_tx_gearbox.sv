@@ -35,6 +35,16 @@ end
 // Then, clk_en is disabled, so that the gearbox
 // clears the leftover bits.
 
+// Buff state:
+// Bit pos  -  63  62  61  ... 33  32  31  30  ... 2   1   0  
+// Cycle 0  - [X   X   X   ... D31 D30 D29 D28 ... D0  H1  H0 ]
+// Cycle 1  - [X   X   X   ... D63 D62 D61 D60 ... D32 D31 D30]
+// Cycle 2  - [X   X   X   ... D29 D28 D27 D26 ... H0 D63 D62 ]
+// ...
+// Cycle 31 - [D63 D62 D61 ... D33 D32 D31 D30 ... D2  D1  D0 ]
+// Cycle 32 - [X   X   X   ... X   X   D63 D62 ... D34 D33 D32]
+// No new data comes at cycle 32 because clk_en is 0
+
 // W_TX_GEARBOX_CNT:W_TRANS_PER_BLK shows the # of blocks
 // received so far. Each received block adds up an offset
 // of 2 bits because of sync hdr
@@ -50,12 +60,11 @@ always_comb begin : gearbox_buf_ctrl
     // at trans_cnt > 0 , id + 2 because once header + data 
     // were received, there are 2 more extra bits 
     // when o_clk_en is 0, the incoming data should be skipped
-    // Note: reversing is done only for the sake of convenience during indexing
     if (o_clk_en) begin
-        if (o_trans_cnt == '0) // turn (H2, H1, D31...D0) into (D0...D31, H1, H2)
-            d_buf[id+:W_SYNC] = reverse_sync(i_sync_hdr); 
+        if (o_trans_cnt == '0)
+            d_buf[id+:W_SYNC] = i_sync_hdr; 
         // reverse data
-        d_buf[(id+2)+:W_DATA] = reverse(i_scr_data);
+        d_buf[(id+2)+:W_DATA] = i_scr_data;
     end
 end
 
@@ -65,8 +74,8 @@ always_ff @(posedge i_clk) begin
 end
 
 assign o_clk_en = (q_stop_cnt < TX_GEARBOX_CNT);
-// map (D0...D31, H1, H2) back to (H2, H1, D31...)
-assign o_pma_data = reverse(q_buf[W_DATA-1:0]); 
+// Always output first W_DATA bits
+assign o_pma_data = q_buf[W_DATA-1:0]; 
 assign o_trans_cnt = q_stop_cnt[W_TRANS_PER_BLK-1:0];
 
 endmodule : eth_pcs_tx_gearbox

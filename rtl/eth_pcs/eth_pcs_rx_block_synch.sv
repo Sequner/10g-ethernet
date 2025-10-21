@@ -44,9 +44,9 @@ always_comb begin : header_cnt
 end
 
 always_ff @(posedge i_clk) begin
-    // having reset helps with timing.
-    // for some reason, without it signals
-    // are mapped to R pin of the flip-flop
+    // Having reset helps with timing.
+    // Without it signals are mapped to R pin of the flip-flop
+    // which causes timing violation.
     if (i_reset) begin
         q_sh_cnt <= '0;
         q_sh_inval_cnt <= '0;

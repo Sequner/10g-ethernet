@@ -19,8 +19,9 @@ localparam W_SH_TH = $clog2(SH_TH);
 localparam SH_INVAL_TH = 16;
 localparam W_SH_INVAL_TH = $clog2(SH_INVAL_TH);
 // RX Gearbox
-localparam W_RX_GEARBOX_OFFSET = $clog2(W_DATA);
-localparam [W_RX_GEARBOX_OFFSET-1:0] RX_GEARBOX_OFFSET_INIT = W_DATA-2; 
+localparam RX_GEARBOX_CNT = W_DATA;
+localparam W_RX_GEARBOX_CNT = $clog2(RX_GEARBOX_CNT);
+localparam W_RX_GEARBOX_BUF = W_DATA;
 
 // Encoder/decoder params
 localparam C_TYPE = 8'h1E,

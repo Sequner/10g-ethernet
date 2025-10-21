@@ -11,5 +11,9 @@ COCOTB_HDL_TIMEUNIT = 1ns
 COCOTB_HDL_TIMEPRECISION = 1ns
 
 EXTRA_ARGS += -DPMA_DATA_SHIFT --sv -Wno-WIDTHEXPAND -Wno-WIDTHTRUNC --trace
+#EXTRA_ARGS += --sv -Wno-WIDTHEXPAND -Wno-WIDTHTRUNC --trace
+
+# changes in Makefile now rebuild sim_build folder
+CUSTOM_COMPILE_DEPS = ./Makefile 
 
 include $(shell cocotb-config --makefiles)/Makefile.sim
