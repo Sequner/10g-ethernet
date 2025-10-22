@@ -21,7 +21,7 @@ logic q_grbx_hdr_valid;
 logic [W_SYNC-1:0] q_grbx_hdr;
 
 // Descrambler reg & wires
-logic [W_DATA-1:0] d_descr_data, q_descr_data;
+logic [W_DATA-1:0] descr_data, q_grbx_data;
 
 assign o_clk_en = grbx_data_valid;
 
@@ -42,15 +42,15 @@ eth_pcs_scrambler #(
     .i_clk(i_clk),
     .i_reset(i_reset),
     .i_clk_en(o_clk_en), // only descramble valid data
-    .i_pld_data(grbx_data),
-    .o_scr_data(d_descr_data)
+    .i_pld_data(q_grbx_data),
+    .o_scr_data(descr_data)
 );
 
 always_ff @(posedge i_clk) begin
     if (o_clk_en) begin
         q_grbx_hdr_valid   <= grbx_hdr_valid;
         q_grbx_hdr         <= grbx_hdr;
-        q_descr_data       <= d_descr_data;
+        q_grbx_data        <= grbx_data;
     end
 end 
 
@@ -60,7 +60,7 @@ eth_pcs_66_64_decoder u_pcs_rx_decoder(
     .i_clk_en(o_clk_en),
     .i_grbx_hdr_valid(q_grbx_hdr_valid),
     .i_grbx_hdr(q_grbx_hdr),
-    .i_descr_data(q_descr_data),
+    .i_descr_data(descr_data),
     .o_xgmii_ctrl(o_xgmii_ctrl),
     .o_xgmii_data(o_xgmii_data)
 );

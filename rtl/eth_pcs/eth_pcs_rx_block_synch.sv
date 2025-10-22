@@ -61,7 +61,7 @@ always_ff @(posedge i_clk) begin
     end
 end
 
-assign o_slip = (i_valid) ? slip : '0;
+assign o_slip = slip;
 assign o_rx_lock = q_blk_lock;
 
 endmodule

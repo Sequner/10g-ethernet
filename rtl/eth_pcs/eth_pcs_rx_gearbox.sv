@@ -12,7 +12,9 @@ module eth_pcs_rx_gearbox (
 );
 
 // Counter to disable clock
-logic [W_RX_GEARBOX_CNT:0] d_stop_cnt, q_stop_cnt = '0;
+(* DONT_TOUCH = "TRUE" *)
+logic [W_RX_GEARBOX_CNT:0] d_stop_cnt;
+logic [W_RX_GEARBOX_CNT:0] q_stop_cnt = '0;
 // Tracks which part of 64b block is being received
 logic [W_TRANS_PER_BLK-1:0] q_trans_cnt = '0;
 // PMA data buffer - data received in prev cycle
@@ -53,10 +55,10 @@ logic slip;
 always_comb begin : stop_cnt_ctrl
     d_stop_cnt = q_stop_cnt;
     // reset on slip
-    if (q_stop_cnt == RX_GEARBOX_CNT | slip)
-        d_stop_cnt = '0;
-    else
+    if (q_stop_cnt < RX_GEARBOX_CNT & !slip)
         d_stop_cnt += 1'b1;
+    else
+        d_stop_cnt = 1'b0;
 end
 
 always_comb begin : hdr_ctrl
@@ -116,7 +118,13 @@ eth_pcs_rx_block_synch u_sync(
 );
 
 always_ff @(posedge i_clk) begin
-    q_stop_cnt <= d_stop_cnt; // TODO: add reset if timing violation occurs
+    // Having reset helps with timing.
+    // Without it signals are mapped to R pin of the flip-flop
+    // which causes a timing violation.
+    if (i_reset)
+        q_stop_cnt <= '0;
+    else
+        q_stop_cnt <= d_stop_cnt;
     q_pma_data_buf <= i_pma_data;
     q_hdr_valid <= d_hdr_valid;
     q_hdr_buf <= d_hdr_buf;
