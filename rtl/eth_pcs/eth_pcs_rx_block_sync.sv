@@ -1,7 +1,7 @@
 import cmn_params::*;
 import eth_pcs_params::*;
 
-module eth_pcs_rx_block_synch (
+module eth_pcs_rx_block_sync (
     input i_clk,
     input i_reset,
     input i_valid,
@@ -64,4 +64,4 @@ end
 assign o_slip = slip;
 assign o_rx_lock = q_blk_lock;
 
-endmodule
+endmodule : eth_pcs_rx_block_sync

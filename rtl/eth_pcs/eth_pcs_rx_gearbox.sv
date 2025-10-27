@@ -108,7 +108,7 @@ always_comb begin : output_ctrl
     end
 end
 
-eth_pcs_rx_block_synch u_sync(
+eth_pcs_rx_block_sync u_sync(
     .i_clk(i_clk),
     .i_reset(i_reset),
     .i_valid(d_hdr_valid),

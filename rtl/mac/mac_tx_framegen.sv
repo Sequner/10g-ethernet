@@ -99,4 +99,4 @@ end
 assign o_xgmii_ctrl = q_xgmii_ctrl;
 assign o_xgmii_data = q_xgmii_data;
 
-endmodule
+endmodule : mac_tx_framegen

@@ -1,7 +1,7 @@
 import cmn_params::*;
 import eth_pcs_params::*;
 
-module eth_pcs_64_66_enc(
+module eth_pcs_64_66_encoder(
     input i_clk,
     input i_reset,
     input i_clk_en,
@@ -276,4 +276,4 @@ end
 assign o_sync_data = q_sync_data;
 assign o_pld_data = q_pld_blk[i_trans_cnt];
 
-endmodule : eth_pcs_64_66_enc
+endmodule : eth_pcs_64_66_encoder

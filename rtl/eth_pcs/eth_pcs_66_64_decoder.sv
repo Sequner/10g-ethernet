@@ -189,7 +189,16 @@ always_ff @(posedge i_clk) begin : ff_ctrl
     end
 end
 
-assign o_xgmii_ctrl = q_ctrl_blk[q_trans_cnt];
-assign o_xgmii_data = q_data_blk[q_trans_cnt];
-    
+generate
+    if (PCS_DECODER_REG_EN) begin
+        assign o_xgmii_ctrl = d_ctrl_blk[d_trans_cnt];
+        assign o_xgmii_data = d_data_blk[d_trans_cnt];
+    end
+    else begin
+        assign o_xgmii_ctrl = q_ctrl_blk[q_trans_cnt];
+        assign o_xgmii_data = q_data_blk[q_trans_cnt];
+        always_comb $display("HERE");
+    end
+endgenerate
+
 endmodule : eth_pcs_66_64_decoder
