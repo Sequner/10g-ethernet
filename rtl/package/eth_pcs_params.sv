@@ -25,11 +25,7 @@ localparam W_RX_GEARBOX_CNT = $clog2(RX_GEARBOX_CNT);
 localparam W_RX_GEARBOX_BUF = W_DATA;
 
 // RX Decoder
-`ifdef PCS_DECODER_REG_EN
-    parameter PCS_DECODER_REG_EN = 1;
-`else
-    parameter PCS_DECODER_REG_EN = 0;
-`endif
+parameter PCS_DECODER_REG_EN = 1;
 
 // Encoder/decoder params
 localparam C_TYPE = 8'h1E,
