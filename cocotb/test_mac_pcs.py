@@ -5,6 +5,7 @@ import random
 from tb_env import *
 
 CLK_PERIOD = 10
+N_TRANS = 32
 
 @cocotb.test()
 async def test_basic_packet(dut):
@@ -26,9 +27,9 @@ async def test_basic_packet(dut):
     for _ in range(5):
         await RisingEdge(dut.clk)
 
-    packet_data = [random.randint(1, 1000) for _ in range(15)]
+    packet_data = [random.randint(1, 1000) for _ in range(N_TRANS)]
     # range should have more than 62 bytes
-    packet_keep = [0xF for _ in range(16)]
+    packet_keep = [0xF for _ in range(N_TRANS)]
 
     cocotb.start_soon(m_monitor.observe(5000))
     cocotb.start_soon(s_monitor.observe(5000))

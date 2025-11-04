@@ -53,7 +53,7 @@ class AXISMasterMonitor:
             name = prefix + sig
             setattr(self, sig, getattr(dut, name))
         self.captured = []
-        self.captured_err_flag = 0
+        self.captured_err_flag = []
 
     async def observe(self, cycles=50):
         for _ in range(cycles):
@@ -66,12 +66,14 @@ class AXISMasterMonitor:
             # remove last 4, because they are CRC
             if self.tlast.value == 1:
                 self.captured = self.captured[:-4]
-                self.captured_err_flag = self.tuser.value
+                self.captured_err_flag.append(self.tuser.value)
 
 class Scoreboard:
     def check(self, sent_data, received_data, received_err_flag):
-        assert received_err_flag == 0, \
+        print(received_err_flag)
+        assert sum(received_err_flag) == 0, \
             f"Transaction error flag raised"
         print(sent_data)
+        print(received_data)
         assert sent_data == received_data, \
             f"Input&Output mismatch"
