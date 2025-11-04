@@ -102,7 +102,7 @@ always_comb begin : axis2ctrl_converter
     // q_tready goes low only when tlast is received
     // so, if q_tready is high, and tvalid is low
     // it means the transaction is not finished, but paused
-    if (!s_axis_tvalid & q_tready & q_state != ST_INIT)
+    if (!s_axis_tvalid & s_axis_tready & q_state != ST_INIT)
         $fatal("transaction is paused without tlast");
 end
 
@@ -127,7 +127,8 @@ always_comb begin : pld_cnt_ctrl
     // reset during error
     if (reset_states) // TODO: try with unique if
         d_pld_cnt = INIT_MIN_PLD_CNT;
-    // increment by 1 only if q_cld_cnt less than N_MIN_TRANS
+
+
     else if (data_rcvd | wr_tail_pad | wr_pad) 
         d_pld_cnt += (q_pld_cnt < N_MIN_TRANS);
 end

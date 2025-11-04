@@ -1,10 +1,11 @@
 import cocotb
-from cocotb.triggers import RisingEdge
+from cocotb.triggers import RisingEdge, NextTimeStep
 import random
 
 class AXISSlaveDriver:
     def __init__(self, dut, prefix="s_axis"):
         self.dut = dut
+        self.clk_en = dut.u_eth_core.tx_clk_en
         self.tdata = getattr(dut, f"{prefix}_tdata")
         self.tkeep = getattr(dut, f"{prefix}_tkeep")
         self.tvalid = getattr(dut, f"{prefix}_tvalid")
@@ -19,8 +20,11 @@ class AXISSlaveDriver:
             self.tvalid.value = 1
             self.tlast.value = 1 if i == len(data_list) - 1 else 0
 
+            # tready changes after rising edge
+            # to capture the change, NextTimeStep is used
+            await NextTimeStep()
             # Wait until DUT is ready
-            while not self.tready.value:
+            while not (self.tready.value):
                 await RisingEdge(self.dut.clk)
             await RisingEdge(self.dut.clk)
 

@@ -28,7 +28,6 @@ async def test_basic_packet(dut):
         await RisingEdge(dut.clk)
 
     packet_data = [random.randint(1, 1000) for _ in range(N_TRANS)]
-    # range should have more than 62 bytes
     packet_keep = [0xF for _ in range(N_TRANS)]
 
     cocotb.start_soon(m_monitor.observe(5000))
