@@ -313,111 +313,38 @@ function automatic void calc_crc_16bit (
     input  [23:0] i_data,
     output [31:0] o_crc
 );
-    o_crc[0] =  i_data[23] ^ i_crc[17] ^ i_crc[20] ^ i_data[17] ^ i_crc[14] ^ i_crc[24] ^ i_crc[8] ^ 
-                i_data[14] ^ i_crc[18] ^ i_data[7] ^ i_data[11] ^ i_data[13];
-    o_crc[1] =  i_data[23] ^ i_crc[17] ^ i_data[6] ^ i_crc[9] ^ i_crc[20] ^ i_crc[19] ^ i_data[17] ^ 
-                i_data[10] ^ i_crc[14] ^ i_crc[24] ^ i_data[12] ^ i_data[22] ^ i_data[14] ^ i_crc[8] ^ 
-                i_data[7] ^ i_data[16] ^ i_crc[21] ^ i_data[11] ^ i_crc[15] ^ i_crc[25];
-    o_crc[2] =  i_data[23] ^ i_crc[17] ^ i_data[6] ^ i_crc[9] ^ i_data[15] ^ i_crc[10] ^ i_data[17] ^ 
-                i_data[10] ^ i_crc[22] ^ i_crc[14] ^ i_crc[24] ^ i_data[22] ^ i_crc[16] ^ i_data[5] ^ 
-                i_crc[26] ^ i_data[14] ^ i_crc[8] ^ i_data[7] ^ i_data[16] ^ i_crc[21] ^ i_data[9] ^ 
-                i_crc[15] ^ i_data[21] ^ i_crc[25];
-    o_crc[3] =  i_crc[17] ^ i_crc[27] ^ i_data[6] ^ i_crc[9] ^ i_data[15] ^ i_crc[10] ^ i_data[8] ^ 
-                i_crc[22] ^ i_data[20] ^ i_data[22] ^ i_crc[16] ^ i_data[5] ^ i_crc[26] ^ i_data[14] ^ 
-                i_crc[18] ^ i_data[16] ^ i_crc[11] ^ i_data[9] ^ i_crc[23] ^ i_crc[15] ^ i_data[21] ^ 
-                i_data[4] ^ i_crc[25] ^ i_data[13];
-    o_crc[4] =  i_data[23] ^ i_crc[27] ^ i_data[15] ^ i_crc[10] ^ i_crc[20] ^ i_crc[19] ^ i_data[17] ^ 
-                i_data[8] ^ i_crc[12] ^ i_crc[14] ^ i_data[20] ^ i_data[19] ^ i_data[3] ^ i_data[12] ^ 
-                i_crc[16] ^ i_data[5] ^ i_crc[26] ^ i_crc[8] ^ i_crc[28] ^ i_crc[11] ^ i_data[11] ^ 
-                i_crc[23] ^ i_data[21] ^ i_data[4];
-    o_crc[5] =  i_data[23] ^ i_crc[27] ^ i_crc[9] ^ i_data[17] ^ i_crc[29] ^ i_crc[12] ^ i_data[10] ^ 
-                i_crc[14] ^ i_data[20] ^ i_data[19] ^ i_data[3] ^ i_data[22] ^ i_crc[8] ^ i_crc[18] ^ 
-                i_crc[28] ^ i_data[16] ^ i_crc[11] ^ i_crc[21] ^ i_data[18] ^ i_crc[13] ^ i_data[2] ^ 
-                i_crc[15] ^ i_data[4] ^ i_data[13];
-    o_crc[6] =  i_crc[9] ^ i_data[15] ^ i_crc[10] ^ i_crc[19] ^ i_crc[30] ^ i_crc[29] ^ i_crc[12] ^ 
-                i_data[17] ^ i_data[1] ^ i_crc[22] ^ i_data[19] ^ i_crc[14] ^ i_data[3] ^ i_data[12] ^ 
-                i_data[22] ^ i_crc[16] ^ i_data[16] ^ i_crc[28] ^ i_data[9] ^ i_data[18] ^ i_crc[13] ^ 
-                i_data[2] ^ i_crc[15] ^ i_data[21];
-    o_crc[7] =  i_data[23] ^ i_data[15] ^ i_crc[10] ^ i_crc[29] ^ i_crc[30] ^ i_data[8] ^ i_data[1] ^ 
-                i_data[20] ^ i_crc[24] ^ i_crc[16] ^ i_crc[8] ^ i_crc[18] ^ i_data[7] ^ i_crc[11] ^ 
-                i_data[16] ^ i_data[0] ^ i_crc[31] ^ i_data[18] ^ i_crc[13] ^ i_data[2] ^ i_crc[23] ^ 
-                i_data[21] ^ i_crc[15] ^ i_data[13];
-    o_crc[8] =  i_data[23] ^ i_data[6] ^ i_crc[9] ^ i_data[15] ^ i_crc[20] ^ i_crc[19] ^ i_crc[30] ^ 
-                i_crc[12] ^ i_data[1] ^ i_data[20] ^ i_data[19] ^ i_data[12] ^ i_data[22] ^ i_crc[16] ^ 
-                i_crc[8] ^ i_crc[18] ^ i_crc[11] ^ i_data[0] ^ i_crc[31] ^ i_data[11] ^ i_data[13] ^ 
-                i_crc[25];
-    o_crc[9] =  i_crc[17] ^ i_crc[9] ^ i_crc[10] ^ i_crc[19] ^ i_crc[20] ^ i_crc[12] ^ i_data[10] ^ 
-                i_data[19] ^ i_data[12] ^ i_data[22] ^ i_data[5] ^ i_crc[26] ^ i_data[14] ^ i_data[0] ^ 
-                i_crc[21] ^ i_crc[31] ^ i_data[18] ^ i_crc[13] ^ i_data[11] ^ i_data[21];
-    o_crc[10] = i_data[23] ^ i_crc[17] ^ i_crc[27] ^ i_crc[10] ^ i_crc[22] ^ i_data[10] ^ i_data[20] ^ 
-                i_crc[24] ^ i_data[14] ^ i_crc[8] ^ i_data[7] ^ i_crc[11] ^ i_crc[21] ^ i_data[9] ^ 
-                i_data[18] ^ i_crc[13] ^ i_data[21] ^ i_data[4];
-    o_crc[11] = i_data[23] ^ i_crc[17] ^ i_data[6] ^ i_crc[9] ^ i_crc[20] ^ i_data[8] ^ i_crc[12] ^ 
-                i_crc[22] ^ i_data[20] ^ i_data[19] ^ i_crc[24] ^ i_data[3] ^ i_data[22] ^ i_data[14] ^ 
-                i_crc[8] ^ i_data[7] ^ i_crc[28] ^ i_crc[11] ^ i_data[9] ^ i_data[11] ^ i_crc[23] ^ 
-                i_crc[25];
-    o_crc[12] = i_data[23] ^ i_crc[17] ^ i_data[6] ^ i_crc[9] ^ i_crc[10] ^ i_crc[20] ^ i_data[17] ^ 
-                i_crc[29] ^ i_data[8] ^ i_crc[12] ^ i_data[10] ^ i_crc[14] ^ i_data[19] ^ i_data[22] ^ 
-                i_data[5] ^ i_crc[26] ^ i_data[14] ^ i_crc[8] ^ i_crc[21] ^ i_data[18] ^ i_crc[13] ^ 
-                i_data[11] ^ i_data[2] ^ i_crc[23] ^ i_data[21] ^ i_crc[25];
-    o_crc[13] = i_crc[27] ^ i_crc[9] ^ i_crc[10] ^ i_crc[30] ^ i_data[17] ^ i_data[10] ^ i_data[1] ^ 
-                i_crc[22] ^ i_data[20] ^ i_crc[14] ^ i_crc[24] ^ i_data[22] ^ i_data[5] ^ i_crc[26] ^ 
-                i_crc[18] ^ i_data[16] ^ i_data[7] ^ i_crc[11] ^ i_crc[21] ^ i_data[9] ^ i_data[18] ^ 
-                i_crc[13] ^ i_crc[15] ^ i_data[21] ^ i_data[4] ^ i_data[13];
-    o_crc[14] = i_data[15] ^ i_data[6] ^ i_crc[10] ^ i_crc[27] ^ i_crc[19] ^ i_data[8] ^ i_crc[12] ^ 
-                i_data[17] ^ i_crc[22] ^ i_data[20] ^ i_data[19] ^ i_crc[14] ^ i_data[3] ^ i_data[12] ^ 
-                i_crc[16] ^ i_crc[28] ^ i_crc[11] ^ i_data[16] ^ i_data[0] ^ i_data[9] ^ i_crc[31] ^ 
-                i_crc[23] ^ i_data[21] ^ i_crc[15] ^ i_crc[25] ^ i_data[4];
-    o_crc[15] = i_crc[17] ^ i_data[15] ^ i_crc[20] ^ i_data[8] ^ i_crc[29] ^ i_crc[12] ^ i_data[20] ^ 
-                i_data[19] ^ i_crc[24] ^ i_data[3] ^ i_crc[16] ^ i_data[14] ^ i_data[5] ^ i_crc[26] ^ 
-                i_crc[11] ^ i_data[7] ^ i_crc[28] ^ i_data[16] ^ i_data[18] ^ i_crc[13] ^ i_data[2] ^ 
-                i_crc[23] ^ i_data[11] ^ i_crc[15];
-    o_crc[16] = i_data[23] ^ i_crc[27] ^ i_data[6] ^ i_data[15] ^ i_crc[20] ^ i_crc[29] ^ i_crc[30] ^ 
-                i_crc[12] ^ i_data[1] ^ i_data[10] ^ i_data[19] ^ i_crc[16] ^ i_crc[8] ^ i_crc[21] ^ 
-                i_data[18] ^ i_crc[13] ^ i_data[11] ^ i_data[2] ^ i_data[4] ^ i_crc[25];
-    o_crc[17] = i_crc[17] ^ i_crc[9] ^ i_crc[30] ^ i_data[17] ^ i_data[10] ^ i_data[1] ^ i_crc[22] ^ 
-                i_crc[14] ^ i_data[3] ^ i_data[22] ^ i_data[5] ^ i_crc[26] ^ i_data[14] ^ i_crc[28] ^ 
-                i_data[0] ^ i_crc[21] ^ i_crc[31] ^ i_data[18] ^ i_data[9] ^ i_crc[13];
-    o_crc[18] = i_crc[10] ^ i_crc[27] ^ i_crc[29] ^ i_data[17] ^ i_data[8] ^ i_crc[22] ^ i_crc[14] ^ 
-                i_crc[18] ^ i_data[16] ^ i_data[0] ^ i_data[9] ^ i_crc[31] ^ i_data[2] ^ i_crc[23] ^ 
-                i_data[21] ^ i_crc[15] ^ i_data[4] ^ i_data[13];
-    o_crc[19] = i_data[15] ^ i_crc[19] ^ i_data[8] ^ i_crc[30] ^ i_data[1] ^ i_data[20] ^ i_crc[24] ^ 
-                i_data[3] ^ i_data[12] ^ i_crc[16] ^ i_crc[11] ^ i_data[16] ^ i_data[7] ^ i_crc[28] ^ 
-                i_crc[23] ^ i_crc[15];
-    o_crc[20] = i_crc[17] ^ i_data[15] ^ i_data[6] ^ i_crc[20] ^ i_crc[12] ^ i_crc[29] ^ i_data[19] ^ 
-                i_crc[24] ^ i_crc[16] ^ i_data[14] ^ i_data[7] ^ i_data[0] ^ i_crc[31] ^ i_data[2] ^ 
-                i_data[11] ^ i_crc[25];
-    o_crc[21] = i_crc[17] ^ i_data[6] ^ i_crc[30] ^ i_data[1] ^ i_data[10] ^ i_data[14] ^ i_data[5] ^ 
-                i_crc[26] ^ i_crc[18] ^ i_crc[21] ^ i_data[18] ^ i_crc[13] ^ i_crc[25] ^ i_data[13];
-    o_crc[22] = i_data[23] ^ i_crc[17] ^ i_crc[27] ^ i_crc[20] ^ i_crc[19] ^ i_crc[22] ^ i_crc[24] ^ 
-                i_data[12] ^ i_data[5] ^ i_crc[26] ^ i_data[14] ^ i_crc[8] ^ i_data[7] ^ i_data[0] ^ 
-                i_crc[31] ^ i_data[9] ^ i_data[11] ^ i_data[4];
-    o_crc[23] = i_data[23] ^ i_crc[17] ^ i_crc[27] ^ i_data[6] ^ i_crc[9] ^ i_data[17] ^ i_data[8] ^ 
-                i_data[10] ^ i_crc[14] ^ i_crc[24] ^ i_data[3] ^ i_data[22] ^ i_data[14] ^ i_crc[8] ^ 
-                i_data[7] ^ i_crc[28] ^ i_crc[21] ^ i_crc[23] ^ i_data[4] ^ i_crc[25];
-    o_crc[24] = i_crc[0] ^ i_data[6] ^ i_crc[9] ^ i_crc[10] ^ i_crc[29] ^ i_crc[22] ^ i_crc[24] ^ 
-                i_data[3] ^ i_data[22] ^ i_data[5] ^ i_crc[26] ^ i_crc[18] ^ i_data[16] ^ i_data[7] ^ 
-                i_crc[28] ^ i_data[9] ^ i_data[2] ^ i_crc[15] ^ i_data[21] ^ i_crc[25] ^ i_data[13];
-    o_crc[25] = i_data[15] ^ i_data[6] ^ i_crc[10] ^ i_crc[27] ^ i_crc[19] ^ i_crc[29] ^ i_crc[30] ^ 
-                i_data[8] ^ i_data[1] ^ i_data[20] ^ i_data[12] ^ i_crc[16] ^ i_data[5] ^ i_crc[26] ^ 
-                i_crc[1] ^ i_crc[11] ^ i_data[2] ^ i_crc[23] ^ i_data[21] ^ i_crc[25] ^ i_data[4];
-    o_crc[26] = i_data[23] ^ i_crc[27] ^ i_crc[2] ^ i_data[17] ^ i_crc[30] ^ i_crc[12] ^ i_data[1] ^ 
-                i_crc[14] ^ i_data[20] ^ i_data[19] ^ i_data[3] ^ i_data[5] ^ i_crc[26] ^ i_crc[8] ^ 
-                i_crc[18] ^ i_crc[28] ^ i_crc[11] ^ i_data[0] ^ i_crc[31] ^ i_data[4] ^ i_data[13];
-    o_crc[27] = i_crc[27] ^ i_crc[9] ^ i_crc[19] ^ i_crc[29] ^ i_crc[12] ^ i_data[19] ^ i_data[3] ^ 
-                i_data[12] ^ i_data[22] ^ i_data[16] ^ i_crc[28] ^ i_data[0] ^ i_crc[3] ^ i_crc[31] ^ 
-                i_data[18] ^ i_crc[13] ^ i_data[2] ^ i_crc[15] ^ i_data[4];
-    o_crc[28] = i_data[15] ^ i_crc[10] ^ i_crc[20] ^ i_crc[29] ^ i_crc[30] ^ i_data[17] ^ i_data[1] ^ 
-                i_crc[4] ^ i_crc[14] ^ i_data[3] ^ i_crc[16] ^ i_crc[28] ^ i_data[18] ^ i_crc[13] ^ 
-                i_data[2] ^ i_data[11] ^ i_data[21];
-    o_crc[29] = i_crc[17] ^ i_crc[29] ^ i_crc[30] ^ i_data[17] ^ i_data[1] ^ i_data[10] ^ i_data[20] ^ 
-                i_crc[14] ^ i_data[14] ^ i_crc[11] ^ i_data[16] ^ i_data[0] ^ i_crc[21] ^ i_crc[31] ^ 
-                i_data[2] ^ i_crc[5] ^ i_crc[15];
-    o_crc[30] = i_data[15] ^ i_crc[30] ^ i_crc[12] ^ i_data[1] ^ i_crc[22] ^ i_data[19] ^ i_crc[6] ^ 
-                i_crc[16] ^ i_crc[18] ^ i_data[16] ^ i_data[0] ^ i_crc[31] ^ i_data[9] ^ i_crc[15] ^ 
-                i_data[13];
-    o_crc[31] = i_crc[17] ^ i_data[15] ^ i_crc[19] ^ i_data[8] ^ i_data[12] ^ i_crc[16] ^ i_data[14] ^ 
-                i_data[0] ^ i_data[18] ^ i_crc[31] ^ i_crc[13] ^ i_crc[23] ^ i_crc[7];
+    o_crc[0]  = i_data[9] ^ i_crc[22] ^ i_data[5] ^ i_crc[26] ^ i_data[15] ^ i_data[6] ^ i_data[3] ^ i_crc[28] ^ i_crc[25] ^ i_crc[16];
+    o_crc[1]  = i_crc[17] ^ i_data[15] ^ i_data[6] ^ i_crc[27] ^ i_crc[29] ^ i_data[8] ^ i_crc[22] ^ i_data[3] ^ i_crc[16] ^ i_data[14] ^ i_crc[28] ^ i_data[9] ^ i_crc[23] ^ i_data[2] ^ i_data[4] ^ i_crc[25];
+    o_crc[2]  = i_crc[17] ^ i_data[15] ^ i_data[6] ^ i_data[8] ^ i_crc[29] ^ i_crc[30] ^ i_crc[22] ^ i_data[1] ^ i_crc[24] ^ i_crc[16] ^ i_data[14] ^ i_crc[18] ^ i_data[7] ^ i_data[9] ^ i_data[2] ^ i_crc[23] ^ i_crc[25] ^ i_data[13];
+    o_crc[3]  = i_crc[17] ^ i_data[6] ^ i_crc[19] ^ i_data[8] ^ i_crc[30] ^ i_data[1] ^ i_crc[24] ^ i_data[12] ^ i_data[14] ^ i_data[5] ^ i_crc[26] ^ i_crc[18] ^ i_data[7] ^ i_data[0] ^ i_crc[31] ^ i_crc[23] ^ i_data[13] ^ i_crc[25];
+    o_crc[4]  = i_data[15] ^ i_crc[27] ^ i_crc[20] ^ i_crc[19] ^ i_crc[22] ^ i_data[3] ^ i_crc[24] ^ i_data[12] ^ i_crc[16] ^ i_crc[18] ^ i_crc[28] ^ i_data[7] ^ i_data[0] ^ i_data[9] ^ i_crc[31] ^ i_data[11] ^ i_data[13] ^ i_data[4];
+    o_crc[5]  = i_crc[17] ^ i_data[15] ^ i_crc[19] ^ i_crc[20] ^ i_data[8] ^ i_crc[29] ^ i_crc[22] ^ i_data[10] ^ i_data[12] ^ i_crc[16] ^ i_data[5] ^ i_crc[26] ^ i_data[14] ^ i_crc[21] ^ i_data[9] ^ i_data[2] ^ i_crc[23] ^ i_data[11];
+    o_crc[6]  = i_crc[17] ^ i_crc[27] ^ i_crc[20] ^ i_data[8] ^ i_crc[30] ^ i_data[1] ^ i_crc[22] ^ i_data[10] ^ i_crc[24] ^ i_data[14] ^ i_crc[18] ^ i_data[7] ^ i_crc[21] ^ i_data[9] ^ i_crc[23] ^ i_data[11] ^ i_data[4] ^ i_data[13];
+    o_crc[7]  = i_data[15] ^ i_crc[19] ^ i_data[8] ^ i_data[10] ^ i_crc[24] ^ i_data[12] ^ i_crc[16] ^ i_data[5] ^ i_crc[26] ^ i_crc[18] ^ i_data[7] ^ i_data[0] ^ i_crc[21] ^ i_crc[31] ^ i_crc[23] ^ i_data[13];
+    o_crc[8]  = i_crc[17] ^ i_data[15] ^ i_crc[27] ^ i_crc[19] ^ i_crc[20] ^ i_data[3] ^ i_data[12] ^ i_crc[24] ^ i_crc[16] ^ i_data[5] ^ i_crc[26] ^ i_data[14] ^ i_crc[28] ^ i_data[7] ^ i_data[11] ^ i_data[4];
+    o_crc[9]  = i_crc[17] ^ i_crc[27] ^ i_data[6] ^ i_crc[20] ^ i_crc[29] ^ i_data[10] ^ i_data[3] ^ i_data[14] ^ i_crc[18] ^ i_crc[28] ^ i_crc[21] ^ i_data[2] ^ i_data[11] ^ i_data[4] ^ i_data[13] ^ i_crc[25];
+    o_crc[10] = i_data[15] ^ i_data[6] ^ i_crc[19] ^ i_crc[30] ^ i_crc[29] ^ i_data[1] ^ i_data[10] ^ i_data[12] ^ i_crc[16] ^ i_crc[18] ^ i_crc[21] ^ i_data[2] ^ i_crc[25] ^ i_data[13];
+    o_crc[11] = i_crc[17] ^ i_data[15] ^ i_data[6] ^ i_crc[19] ^ i_crc[20] ^ i_crc[30] ^ i_data[1] ^ i_data[3] ^ i_data[12] ^ i_crc[16] ^ i_data[14] ^ i_crc[28] ^ i_data[0] ^ i_crc[31] ^ i_data[11] ^ i_crc[25];
+    o_crc[12] = i_crc[17] ^ i_data[15] ^ i_data[6] ^ i_crc[20] ^ i_crc[29] ^ i_crc[22] ^ i_data[10] ^ i_data[3] ^ i_crc[16] ^ i_data[14] ^ i_crc[18] ^ i_crc[28] ^ i_data[0] ^ i_crc[21] ^ i_data[9] ^ i_crc[31] ^ i_data[2] ^ i_data[11] ^ i_crc[25] ^ i_data[13];
+    o_crc[13] = i_crc[17] ^ i_crc[19] ^ i_data[8] ^ i_crc[29] ^ i_crc[30] ^ i_data[1] ^ i_data[10] ^ i_crc[22] ^ i_data[12] ^ i_data[14] ^ i_data[5] ^ i_crc[26] ^ i_crc[18] ^ i_crc[21] ^ i_data[9] ^ i_data[2] ^ i_crc[23] ^ i_data[13];
+    o_crc[14] = i_crc[27] ^ i_crc[19] ^ i_crc[20] ^ i_crc[30] ^ i_data[8] ^ i_data[1] ^ i_crc[22] ^ i_crc[24] ^ i_data[12] ^ i_crc[18] ^ i_data[7] ^ i_data[0] ^ i_crc[31] ^ i_data[9] ^ i_data[11] ^ i_crc[23] ^ i_data[13] ^ i_data[4];
+    o_crc[15] = i_data[6] ^ i_crc[20] ^ i_crc[19] ^ i_data[8] ^ i_data[10] ^ i_data[12] ^ i_crc[24] ^ i_data[3] ^ i_data[7] ^ i_crc[28] ^ i_data[0] ^ i_crc[21] ^ i_crc[31] ^ i_crc[23] ^ i_data[11] ^ i_crc[25];
+    o_crc[16] = i_crc[0] ^ i_data[15] ^ i_crc[20] ^ i_crc[29] ^ i_data[10] ^ i_data[3] ^ i_crc[24] ^ i_crc[16] ^ i_crc[28] ^ i_data[7] ^ i_crc[21] ^ i_data[11] ^ i_data[2];
+    o_crc[17] = i_crc[17] ^ i_data[6] ^ i_crc[29] ^ i_crc[30] ^ i_data[10] ^ i_data[1] ^ i_crc[22] ^ i_data[14] ^ i_crc[1] ^ i_crc[21] ^ i_data[9] ^ i_data[2] ^ i_crc[25];
+    o_crc[18] = i_crc[2] ^ i_crc[30] ^ i_data[8] ^ i_data[1] ^ i_crc[22] ^ i_crc[26] ^ i_data[5] ^ i_crc[18] ^ i_data[0] ^ i_data[9] ^ i_crc[31] ^ i_crc[23] ^ i_data[13];
+    o_crc[19] = i_crc[27] ^ i_crc[19] ^ i_data[8] ^ i_data[12] ^ i_crc[24] ^ i_data[7] ^ i_data[0] ^ i_crc[3] ^ i_crc[31] ^ i_crc[23] ^ i_data[4];
+    o_crc[20] = i_data[6] ^ i_crc[20] ^ i_crc[4] ^ i_data[3] ^ i_crc[24] ^ i_data[7] ^ i_crc[28] ^ i_data[11] ^ i_crc[25];
+    o_crc[21] = i_data[6] ^ i_crc[29] ^ i_data[10] ^ i_crc[26] ^ i_data[5] ^ i_crc[21] ^ i_crc[5] ^ i_data[2] ^ i_crc[25];
+    o_crc[22] = i_data[15] ^ i_data[6] ^ i_crc[27] ^ i_crc[30] ^ i_data[1] ^ i_data[3] ^ i_crc[6] ^ i_crc[16] ^ i_crc[28] ^ i_crc[25] ^ i_data[4];
+    o_crc[23] = i_crc[17] ^ i_data[15] ^ i_data[6] ^ i_crc[29] ^ i_crc[22] ^ i_crc[16] ^ i_data[14] ^ i_data[0] ^ i_data[9] ^ i_crc[31] ^ i_data[2] ^ i_crc[25] ^ i_crc[7];
+    o_crc[24] = i_data[14] ^ i_data[5] ^ i_crc[26] ^ i_crc[17] ^ i_data[1] ^ i_crc[8] ^ i_crc[23] ^ i_crc[18] ^ i_data[8] ^ i_data[13] ^ i_crc[30];
+    o_crc[25] = i_crc[31] ^ i_crc[27] ^ i_crc[18] ^ i_crc[9] ^ i_data[7] ^ i_crc[24] ^ i_data[12] ^ i_crc[19] ^ i_data[13] ^ i_data[4] ^ i_data[0];
+    o_crc[26] = i_data[15] ^ i_crc[10] ^ i_crc[20] ^ i_crc[19] ^ i_crc[22] ^ i_data[12] ^ i_crc[16] ^ i_data[5] ^ i_crc[26] ^ i_data[9] ^ i_data[11];
+    o_crc[27] = i_crc[17] ^ i_crc[27] ^ i_crc[20] ^ i_data[8] ^ i_data[10] ^ i_data[14] ^ i_crc[11] ^ i_crc[21] ^ i_crc[23] ^ i_data[11] ^ i_data[4];
+    o_crc[28] = i_crc[12] ^ i_crc[22] ^ i_data[10] ^ i_crc[24] ^ i_data[3] ^ i_crc[18] ^ i_data[7] ^ i_crc[28] ^ i_crc[21] ^ i_data[9] ^ i_data[13];
+    o_crc[29] = i_data[6] ^ i_crc[19] ^ i_data[8] ^ i_crc[29] ^ i_crc[22] ^ i_data[12] ^ i_crc[13] ^ i_data[9] ^ i_data[2] ^ i_crc[23] ^ i_crc[25];
+    o_crc[30] = i_data[5] ^ i_crc[26] ^ i_data[1] ^ i_data[11] ^ i_crc[23] ^ i_crc[14] ^ i_crc[20] ^ i_data[7] ^ i_crc[24] ^ i_crc[30] ^ i_data[8];
+    o_crc[31] = i_data[10] ^ i_crc[31] ^ i_crc[27] ^ i_data[6] ^ i_data[7] ^ i_crc[24] ^ i_crc[15] ^ i_data[4] ^ i_data[0] ^ i_crc[21] ^ i_crc[25];
 endfunction
 
 function automatic void calc_crc_8bit (
