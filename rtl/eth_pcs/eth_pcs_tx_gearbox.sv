@@ -13,15 +13,25 @@ module eth_pcs_tx_gearbox(
 
 logic [W_TX_GEARBOX_CNT:0] d_stop_cnt;
 logic [W_TX_GEARBOX_CNT:0] q_stop_cnt = '0;
+logic [W_TX_GEARBOX_CNT:0] hdr_offset;
+logic [W_TX_GEARBOX_CNT:0] d_data_offset;
+logic [W_TX_GEARBOX_CNT:0] q_data_offset = 2'd2;
 logic [W_TX_GEARBOX_BUF-1:0] d_buf;
 logic [W_TX_GEARBOX_BUF-1:0] q_buf = '0;
 
 always_comb begin : cnt_ctrl
     d_stop_cnt = q_stop_cnt;
-    if (q_stop_cnt == TX_GEARBOX_CNT)
+    if (q_stop_cnt >= TX_GEARBOX_CNT)
         d_stop_cnt = '0;
     else
         d_stop_cnt += 1'b1;
+    
+    d_data_offset = q_data_offset;
+    if (q_stop_cnt == TX_GEARBOX_CNT)
+        d_data_offset = 2'd2;
+    // at trans_cnt == '0, we receive a sync header
+    else if (o_trans_cnt == '1)
+        d_data_offset += 2'd2;
 end
 
 // When new pcs block is generated, the gearbox
@@ -51,7 +61,9 @@ end
 integer id;
 
 always_comb begin : gearbox_buf_ctrl 
-    id = {q_stop_cnt[W_TX_GEARBOX_CNT-1:W_TRANS_PER_BLK], 1'b0};
+    hdr_offset = {q_stop_cnt[W_TX_GEARBOX_CNT-1:W_TRANS_PER_BLK], 
+                  {W_TRANS_PER_BLK{1'b0}}};
+//    id = {q_stop_cnt[W_TX_GEARBOX_CNT-1:W_TRANS_PER_BLK], 1'b0};
     // The first W_DATA bits of q_buf are sent to PMA.
     // Hence, they are removed from the buffer
     d_buf = {'0, q_buf[W_TX_GEARBOX_BUF-1:W_DATA]};
@@ -62,20 +74,20 @@ always_comb begin : gearbox_buf_ctrl
     // when o_clk_en is 0, the incoming data should be skipped
     if (o_clk_en) begin
         if (o_trans_cnt == '0)
-            d_buf[id+:W_SYNC] = i_sync_hdr; 
-        // reverse data
-        d_buf[(id+2)+:W_DATA] = i_scr_data;
+            d_buf[hdr_offset+:W_SYNC] = i_sync_hdr; 
+        d_buf[q_data_offset+:W_DATA] = i_scr_data;
     end
 end
 
 always_ff @(posedge i_clk) begin
     q_stop_cnt <= d_stop_cnt;
     q_buf <= d_buf;
+    q_data_offset <= d_data_offset;
 end
 
 assign o_clk_en = (q_stop_cnt < TX_GEARBOX_CNT);
 // Always output first W_DATA bits
-assign o_pma_data = q_buf[W_DATA-1:0]; 
+assign o_pma_data = d_buf[W_DATA-1:0]; 
 assign o_trans_cnt = q_stop_cnt[W_TRANS_PER_BLK-1:0];
 
 endmodule : eth_pcs_tx_gearbox

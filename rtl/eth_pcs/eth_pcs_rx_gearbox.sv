@@ -111,8 +111,8 @@ end
 eth_pcs_rx_block_sync u_sync(
     .i_clk(i_clk),
     .i_reset(i_reset),
-    .i_valid(d_hdr_valid),
-    .i_sync_hdr(d_hdr_buf),
+    .i_valid(q_hdr_valid),
+    .i_sync_hdr(q_hdr_buf),
     .o_rx_lock(),
     .o_slip(slip)
 );
