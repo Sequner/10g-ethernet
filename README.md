@@ -11,10 +11,10 @@ The custom PCS module receives a raw PMA input and does block synchronization.
 
 ## Performance
 
-Total latency from MAC TX input (AXI-Stream Slave) to MAC RX output (AXI-Stream Master) is **68 ns.**
+Total latency from MAC TX input (AXI-Stream Slave) to MAC RX output (AXI-Stream Master) is on average **~69 ns.**
+<img width="815" height="295" alt="kintex_7_perf" src="https://github.com/user-attachments/assets/143473ff-95ea-46f1-9a4d-619dacd5bdf4" />
 
-## Design Details
-Key design decisions:
+## Key Design Decisions
 1. MAC TX AXI-Stream Slave
     - For a valid transaction, all bytes of the input data must be valid (tkeep = '1), except when tlast is raised.
     - For tlast, the valid data bytes must be contiguously aligned.
@@ -24,3 +24,8 @@ Key design decisions:
     - When tlast is raised, all frame data is received. If tuser is 1, if the error was detected in the frame, else there is no error.
 3. RX-side 66B-to-64B decoder
     - The decoder does not follow the spec. The RX MAC layer adopts this change, and outputs data accordingly.
+
+## TODO
+1. Script for generating IPs
+2. Script for running vivado synthesis, implementation, etc.
+3. Maybe someday add W_DATA=16 bit support
