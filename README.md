@@ -12,6 +12,7 @@ The custom PCS module receives a raw PMA input and does block synchronization.
 ## Performance
 
 Total latency from MAC TX input (AXI-Stream Slave) to MAC RX output (AXI-Stream Master) is on average **~69 ns.**
+
 <img width="815" height="295" alt="kintex_7_perf" src="https://github.com/user-attachments/assets/143473ff-95ea-46f1-9a4d-619dacd5bdf4" />
 
 ## Key Design Decisions
@@ -25,7 +26,10 @@ Total latency from MAC TX input (AXI-Stream Slave) to MAC RX output (AXI-Stream 
 3. RX-side 66B-to-64B decoder
     - The decoder does not follow the spec. The RX MAC layer adopts this change, and outputs data accordingly.
 
+## How To Run "Example"
+1. Generate VIO, ILA, and GTX Transceiver IPs using Makefile in the example/custom_kintex7_board directory.
+2. Simulate/synthesize/implement/generate bitstream using Vivado GUI. (tcl scripts are to be added)
+
 ## TODO
-1. Script for generating IPs
-2. Script for running vivado synthesis, implementation, etc.
-3. Maybe someday add W_DATA=16 bit support
+1. Script for running vivado synthesis, implementation, etc.
+2. Maybe someday add W_DATA=16 bit support
